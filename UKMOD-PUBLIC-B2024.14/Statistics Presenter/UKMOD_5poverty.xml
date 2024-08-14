@@ -1,0 +1,561 @@
+<Template>
+  <TemplateInfo>
+    <Name>UKMOD Statistics - Poverty</Name>
+    <Title>UKMOD Statistics - Poverty</Title>
+    <Subtitle>Results for [baseSysPretty]</Subtitle>
+    <Button>[baseSys]</Button>
+    <Description>
+      <![CDATA[{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}{\f1\fnil\fcharset0 Calibri;}}{\colortbl;\red0\green112\blue192;\red0\green0\blue0;}{\*\generator Riched20 10.0.17134}\viewkind4\uc1\pard\widctlpar\sa200\sl276\slmult1\cf1\b\f0\fs22 UKMOD Statistics - Poverty\cf2\b0 : this template provides statistics describing the incidence of \ul poverty relative to a user supplied povery line\ulnone . Poverty statistics calculated relative to the standard poverty line equal to 60\% of median equivalised disposable household income (in currency per week) are reported by \ldblquote UKMOD Statistics - Default\ldblquote . \par \pard\sa200\sl276\slmult1 The follow-up screen will ask you to \ul select the UKMOD standard output file(s)\ulnone  that you want to include in the analysis. By default, it will show you the files saved in the UKMOD output folder of your current project, but you can change the folder by clicking on the \ldblquote\'85\rdblquote  button.  Multiple files can be selected using Ctrl + Shift. \par \pard\sa200\sl276\slmult1 You will then be requested to enter your desired poverty line for analysis, specified in terms of weekly equivalised disposable income before housing costs. \f1\lang9 \par }]]>
+    </Description>
+    <GeneralDescription>
+      <![CDATA[
+        <p style='line-height:1.5'><b><span style='color:#0070C0'>Poverty indicators:</span></b></p>
+        <p style='line-height:1.5'>Households are defined as <u>being at risk of poverty (poor)</u> if their equivalised household disposable income is below the considered poverty line (in currency per week).</p>
+        <p style='line-height:1.5'>The <u>poverty line</u> considered here is supplied as a parameter for analysis. In contrast, the standard definition of the poverty line is 60% of median equivalised household disposable income. For analysis based on the standard definition of the poverty line, see the "UKMOD Statistics - Default" template.</p>
+        <p style='line-height:1.5'>The <u>poverty gap</u> is the difference between the poverty line and the median income of people at-risk-of poverty, divided by the poverty line. The median income of people at-risk-of poverty is based on equivalised household disposable income. In this calculation, all negative equivalised household disposable incomes are recoded to 0.</p>
+
+        <p style='line-height:1.5'><b><span style='color:#0070C0'>Definition of population subgroups:</span></b></p>
+        <p style='margin-bottom:0cm;margin-bottom:.0001pt;'>Population subgroups are defined as follows:</p>
+        <p style='line-height:1.5;margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:36.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;'><span style='font-family:Symbol'>·    </span><u>Children</u> are defined as being under 16 or under 20 years old and in full-time non-advanced education and not married</p>
+        <p style='line-height:1.5;margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:36.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;'><span style='font-family:Symbol'>·    </span><u>Elderly</u> are persons aged 65 or older</p>
+        <p style='line-height:1.5;margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:36.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;'><span style='font-family:Symbol'>·    </span><u>Adults</u> are defined as anyone who is not a child and not an elderly (i.e. being aged 16 or above, or 20 or above if full-time non-advanced education and not married, and up to the age of 64)</p>
+        <p style='line-height:1.5;margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:36.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;'><span style='font-family:Symbol'>·    </span><u>Adults economically active</u> are adults (as defined above) with some earnings income</p>
+
+        <p style='line-height:1.5'><b><span style='color:#0070C0'>Income concepts: </span></b></p>
+        <p style='line-height:1.5'>Two measures of disposable income are considered here: Before Housing Costs (BHC) and After Housing Costs (AHC).</p>
+        <p style='line-height:1.5'><u>Disposable income BHC</u> is the sum of market incomes and benefits (incl. pensions) minus taxes and national insurance contributions.</p>
+        <p style='line-height:1.5'><u>Disposable income AHC</u> equals disposable income BHC minus housing costs, where housing costs are drawn from the Households Below Average Income (HBAI) micro-data. Housing costs include: rent (gross of housing benefit); water rates; community water charges and council water charges; mortgage interest payments; and structural insurance premiums.</p>
+        <p style='line-height:1.5'><u>Equivalised household (benefit unit) disposable income</u> is the total disposable income of the household (benefit unit) divided by the <u>OECD</u> scale (modified OECD scale), rescaled to a couple without children following the HBAI approach. The benefit unit is the nuclear family - the couple (cohabiting or married) or single adult plus any dependent children. For Before Housing Costs income, the equivalence scale attributes a weight of 0.67 to the head of the household/benefit unit, a weight of 0.33 to any other member aged 14 years or over, and a weight of 0.2 to every child aged under 14 years. For After Housing Costs income, the equivalence scale attributes a weight of 0.58 to the head of the household/benefit unit, 0.42 to any other member aged 14 years or over, and a weight of 0.2 for any child aged under 14 years.</p>
+        <p style='line-height:1.5'>All monetary amounts are presented in average weekly amounts and in GBP (i.e. in the currency defined for the UKMOD output file).</p>
+        <p style='line-height:1.5'>The unit of analysis is the individual.</p>
+        
+        <p style='line-height:1.5'><b><span style='color:#0070C0'>Variable definition of income:</span></b></p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Disposable income BHC: ils_dispy = ils_origy + ils_ben – ils_tax – ils_sicdy</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Disposable income AHC: il_dispy_ahc = ils_dispy – xhc_hbai</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Total market income: ils_origy</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>All benefits: ils_ben</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Direct taxes: ils_tax</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>All National Insurance Contributions: ils_sicdy</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Earnings income: ils_earns</p>
+        <p style='margin-bottom:8.0pt;line-height:105%;'>Housing costs expenditure: xhc_hbai</p>
+      ]]>
+    </GeneralDescription>
+    <TemplateType>Default</TemplateType>
+    <AdditionalCalculationLevels>
+      <AdditionalCalculationLevel>
+        <Name>Family</Name>
+        <GroupingVar>tu_bu_statsuk_headid</GroupingVar>
+      </AdditionalCalculationLevel>
+    </AdditionalCalculationLevels>
+    <RequiredVariables>
+      <RequiredVariable>
+        <Name>weight</Name>
+        <ReadVar>dwt</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>tu_bu_statsuk_headid</Name>
+        <ReadVar>tu_bu_statsuk_headid</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>idhh</Name>
+        <ReadVar>idhh</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>idperson</Name>
+        <ReadVar>idperson</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>age</Name>
+        <ReadVar>dag</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>dgn</Name>
+        <ReadVar>dgn</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>dec</Name>
+        <ReadVar>dec</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>dms</Name>
+        <ReadVar>dms</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>ilsDispy</Name>
+        <ReadVar>ils_dispy</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>ilsDispyAHC</Name>
+        <ReadVar>il_dispy_ahc</ReadVar>
+      </RequiredVariable>
+      <RequiredVariable>
+        <Name>ilsEarns</Name>
+        <ReadVar>ils_earns</ReadVar>
+      </RequiredVariable>
+    </RequiredVariables>
+    <OptionalVariables>
+      <OptionalVariable>
+        <Name>PensionAgeMale</Name>
+        <ReadVar>$spamale</ReadVar>
+        <DefaultValue>65</DefaultValue>
+      </OptionalVariable>
+      <OptionalVariable>
+        <Name>PensionAgeFemale</Name>
+        <ReadVar>$spafem</ReadVar>
+        <DefaultValue>65</DefaultValue>
+      </OptionalVariable>
+    </OptionalVariables>
+    <UserVariables>
+      <UserVariable>
+        <Name>PovertyLineBHC</Name>
+        <DefaultValue>0</DefaultValue>
+        <UserInputType>Numeric</UserInputType>
+        <Title>Before Housing Costs (BHC) Poverty Line (per week)</Title>
+        <Description>Specify the desired poverty line to consider for analysis. This poverty line will be applied to household equivalised income before housing costs. The poverty line for after housing costs income will be adjusted by the ratio of median equivalised income after housing costs to median equivalised income before housing costs.</Description>
+      </UserVariable>
+    </UserVariables>
+  </TemplateInfo>
+  <Globals>
+    <Filters>
+      <Filter>
+        <Name>FilterPerson</Name>
+        <FormulaString><![CDATA[true]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterChildren</Name>
+        <FormulaString><![CDATA[(DATA_VAR[@age]<16 | ((DATA_VAR[@age]<20 & DATA_VAR[@dec]>0 & DATA_VAR[@dec] < 6) & DATA_VAR[@dms]!=2))]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterElderly</Name>
+        <FormulaString><![CDATA[((DATA_VAR[@age] >= DATA_VAR[@PensionAgeMale] && DATA_VAR[@dgn] == 1) || (DATA_VAR[@age] >= DATA_VAR[@PensionAgeFemale] && DATA_VAR[@dgn] == 0))]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterAdults</Name>
+        <FormulaString><![CDATA[!(DATA_VAR[@age]<16 | ((DATA_VAR[@age]<20 & DATA_VAR[@dec]>0 & DATA_VAR[@dec] < 6) & DATA_VAR[@dms]!=2)) && !((DATA_VAR[@age] >= DATA_VAR[@PensionAgeMale] && DATA_VAR[@dgn] == 1) || (DATA_VAR[@age] >= DATA_VAR[@PensionAgeFemale] && DATA_VAR[@dgn] == 0))]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterAdultsActive</Name>
+        <FormulaString><![CDATA[!(DATA_VAR[@age]<16 | ((DATA_VAR[@age]<20 & DATA_VAR[@dec]>0 & DATA_VAR[@dec] < 6) & DATA_VAR[@dms]!=2)) && !((DATA_VAR[@age] >= DATA_VAR[@PensionAgeMale] && DATA_VAR[@dgn] == 1) || (DATA_VAR[@age] >= DATA_VAR[@PensionAgeFemale] && DATA_VAR[@dgn] == 0)) && DATA_VAR[@ilsEarns] > 0]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterEquivAdult</Name>
+        <FormulaString><![CDATA[DATA_VAR[@age] >= 14]]></FormulaString>
+      </Filter>
+      <Filter>
+        <Name>FilterEquivChild</Name>
+        <FormulaString><![CDATA[DATA_VAR[@age] < 14]]></FormulaString>
+      </Filter>
+    </Filters>
+    <Actions>
+      <Action>
+        <Reform>false</Reform>
+        <CalculationType>CreateEquivalenceScale</CalculationType>
+        <OutputVar>EqScale</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivAdult</VarName>
+            <NumericValue>0.33</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivChild</VarName>
+            <NumericValue>0.2</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceFirstPerson</Name>
+            <NumericValue>0.67</NumericValue>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <Reform>false</Reform>
+        <CalculationType>CreateEquivalenceScale</CalculationType>
+        <OutputVar>EqScaleAHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivAdult</VarName>
+            <NumericValue>0.42</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivChild</VarName>
+            <NumericValue>0.2</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceFirstPerson</Name>
+            <NumericValue>0.58</NumericValue>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <Reform>false</Reform>
+        <CalculationType>CreateEquivalenceScale</CalculationType>
+        <CalculationLevel>Family</CalculationLevel>
+        <OutputVar>EqScaleFam</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivAdult</VarName>
+            <NumericValue>0.33</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivChild</VarName>
+            <NumericValue>0.2</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceFirstPerson</Name>
+            <NumericValue>0.67</NumericValue>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <Reform>false</Reform>
+        <CalculationType>CreateEquivalenceScale</CalculationType>
+        <CalculationLevel>Family</CalculationLevel>
+        <OutputVar>EqScaleFamAHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivAdult</VarName>
+            <NumericValue>0.42</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScaleBand</Name>
+            <VarName>FilterEquivChild</VarName>
+            <NumericValue>0.2</NumericValue>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceFirstPerson</Name>
+            <NumericValue>0.58</NumericValue>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>FilterPerson</OutputVar>
+        <Filter>
+          <Name>FilterPerson</Name>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>FilterChildren</OutputVar>
+        <Filter>
+          <Name>FilterChildren</Name>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>FilterElderly</OutputVar>
+        <Filter>
+          <Name>FilterElderly</Name>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>FilterAdults</OutputVar>
+        <Filter>
+          <Name>FilterAdults</Name>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>FilterAdultsActive</OutputVar>
+        <Filter>
+          <Name>FilterAdultsActive</Name>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateEquivalized</CalculationType>
+        <OutputVar>eqDispy</OutputVar>
+        <Parameters>
+          <Parameter>
+            <VarName>ilsDispy</VarName>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScale</Name>
+            <VarName>EqScale</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CreateEquivalized</CalculationType>
+        <OutputVar>eqDispyAHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <VarName>ilsDispyAHC</VarName>
+          </Parameter>
+          <Parameter>
+            <Name>EquivalenceScale</Name>
+            <VarName>EqScaleAHC</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CalculateMedian</CalculationType>
+        <OutputVar>medIncBHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>IncomeVar</Name>
+            <VarName>eqDispy</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CalculateMedian</CalculationType>
+        <OutputVar>medIncAHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>IncomeVar</Name>
+            <VarName>eqDispyAHC</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CalculateArithmetic</CalculationType>
+        <FormulaString><![CDATA[USR_VAR[@PovertyLineBHC] / 7 * 365 / 12]]></FormulaString>
+        <OutputVar>povLineBHC</OutputVar>
+      </Action>
+      <Action>
+        <CalculationType>CalculateArithmetic</CalculationType>
+        <FormulaString><![CDATA[SAVED_VAR[@medIncAHC] / SAVED_VAR[@medIncBHC] * SAVED_VAR[@povLineBHC]]]></FormulaString>
+        <OutputVar>povLineAHC</OutputVar>
+      </Action>
+      <Action>
+        <CalculationType>CalculatePovertyGap</CalculationType>
+        <OutputVar>povGapBHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>IncomeVar</Name>
+            <VarName>eqDispy</VarName>
+          </Parameter>
+          <Parameter>
+            <Name>PovertyLine</Name>
+            <VarName>povLineBHC</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CalculatePovertyGap</CalculationType>
+        <OutputVar>povGapAHC</OutputVar>
+        <Parameters>
+          <Parameter>
+            <Name>IncomeVar</Name>
+            <VarName>eqDispyAHC</VarName>
+          </Parameter>
+          <Parameter>
+            <Name>PovertyLine</Name>
+            <VarName>povLineAHC</VarName>
+          </Parameter>
+        </Parameters>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>IsPoor</OutputVar>
+        <Filter>
+          <Name>FilterPoor</Name>
+          <FormulaString><![CDATA[DATA_VAR[@eqDispy] <= SAVED_VAR[@povLineBHC]]]></FormulaString>
+        </Filter>
+      </Action>
+      <Action>
+        <CalculationType>CreateFlag</CalculationType>
+        <OutputVar>IsPoorAHC</OutputVar>
+        <Filter>
+          <Name>FilterPoorAHC</Name>
+          <FormulaString><![CDATA[DATA_VAR[@eqDispyAHC] <= SAVED_VAR[@povLineAHC]]]></FormulaString>
+        </Filter>
+      </Action>
+    </Actions>
+  </Globals>
+  <Pages>
+    <Page>
+      <Name>Poverty</Name>
+      <Button>Poverty</Button>
+      <Title>Basic Poverty Indices</Title>
+      <Description>
+        <![CDATA[<p style='line-height:1.5'><span lang=EN>The tables here report <b><span style='color:#0070C0'>the poverty headcount</span></b> of the total population and selected population sub-groups in addition to the poverty gap for the user-supplied poverty line.</span></p>]]>
+      </Description>
+      <Tables>
+        <Table>
+          <Title>Before Housing Costs Income</Title>
+          <Columns>
+            <Column>
+              <Name>Poverty Rates</Name>
+              <Tooltip>Equivalised household disposable income before housing costs lower than the reported poverty line.</Tooltip>
+              <CellAction>
+                <CalculationType>CalculatePopulationCount</CalculationType>
+                <FormulaString><![CDATA[DATA_VAR[@CountVar]]]></FormulaString>
+                <Parameters>
+                  <Parameter>
+                    <Name>CountVar</Name>
+                    <VarName>IsPoor</VarName>
+                  </Parameter>
+                </Parameters>
+              </CellAction>
+              <StringFormat>P2</StringFormat>
+            </Column>
+          </Columns>
+          <Rows>
+            <Row>
+              <Name>Poverty headcount by population group:</Name>
+              <CellAction>
+                <CalculationType>Empty</CalculationType>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    All]]></Name>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Children]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterChildren</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Adults]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterAdults</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[        Adults Economically Active]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterAdultsActive</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Elderly]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterElderly</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name>Poverty Gap</Name>
+              <Tooltip>Difference between the median equivalised disposable income of people at-risk-of-poverty and assumed poverty line, as a percentage of poverty line.</Tooltip>
+              <CellAction>
+                <BlendParameters>false</BlendParameters>
+                <CalculationType>CalculateArithmetic</CalculationType>
+                <FormulaString><![CDATA[SAVED_VAR[@povGapBHC]]]></FormulaString>
+              </CellAction>
+              <HasSeparatorBefore>true</HasSeparatorBefore>
+            </Row>
+            <Row>
+              <Name>Poverty Line</Name>
+              <CellAction>
+                <BlendParameters>false</BlendParameters>
+                <CalculationType>CalculateArithmetic</CalculationType>
+                <FormulaString><![CDATA[SAVED_VAR[@povLineBHC]*7*12/365]]></FormulaString>
+              </CellAction>
+              <StringFormat>#,0.00</StringFormat>
+            </Row>
+          </Rows>
+        </Table>
+        <Table>
+          <Title>After Housing Costs Income</Title>
+          <Columns>
+            <Column>
+              <Name>Poverty Rates</Name>
+              <Tooltip>Equivalised household disposable income after housing costs lower than the reported poverty line.</Tooltip>
+              <CellAction>
+                <CalculationType>CalculatePopulationCount</CalculationType>
+                <FormulaString><![CDATA[DATA_VAR[@CountVar]]]></FormulaString>
+                <Parameters>
+                  <Parameter>
+                    <Name>CountVar</Name>
+                    <VarName>IsPoorAHC</VarName>
+                  </Parameter>
+                </Parameters>
+              </CellAction>
+              <StringFormat>P2</StringFormat>
+            </Column>
+          </Columns>
+          <Rows>
+            <Row>
+              <Name>Poverty headcount by population group:</Name>
+              <CellAction>
+                <CalculationType>Empty</CalculationType>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    All]]></Name>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Children]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterChildren</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Adults]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterAdults</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[        Adults Economically Active]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterAdultsActive</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name><![CDATA[    Elderly]]></Name>
+              <CellAction>
+                <Filter>
+                  <Name>FilterElderly</Name>
+                </Filter>
+              </CellAction>
+            </Row>
+            <Row>
+              <Name>Poverty Gap</Name>
+              <Tooltip>Difference between the median equivalised disposable income of people at-risk-of-poverty and assumed poverty line, as a percentage of poverty line.</Tooltip>
+              <CellAction>
+                <BlendParameters>false</BlendParameters>
+                <CalculationType>CalculateArithmetic</CalculationType>
+                <FormulaString><![CDATA[SAVED_VAR[@povGapAHC]]]></FormulaString>
+                <Parameters>
+                  <Parameter>
+                    <Name>povGap</Name>
+                    <VarName>povGapAHC</VarName>
+                  </Parameter>
+                </Parameters>
+              </CellAction>
+              <HasSeparatorBefore>true</HasSeparatorBefore>
+            </Row>
+            <Row>
+              <Name>Poverty Line</Name>
+              <CellAction>
+                <BlendParameters>false</BlendParameters>
+                <CalculationType>CalculateArithmetic</CalculationType>
+                <FormulaString><![CDATA[SAVED_VAR[@povLineAHC]*7*12/365]]></FormulaString>
+                <Parameters>
+                  <Parameter>
+                    <Name>povLine</Name>
+                    <VarName>povLineAHC</VarName>
+                  </Parameter>
+                </Parameters>
+              </CellAction>
+              <StringFormat>#,0.00</StringFormat>
+            </Row>
+          </Rows>
+        </Table>
+      </Tables>
+    </Page>
+  </Pages>
+</Template>
