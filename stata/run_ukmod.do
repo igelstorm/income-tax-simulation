@@ -8,7 +8,7 @@ import delimited ../UKMOD-PUBLIC-B2024.14/Input/UK_2019_a2.txt
 // euromod_run changes the working directory, so we need to save it and manually
 // reset it afterwards
 local workingdir = c(pwd)
-euromod_run, model($model_path) system(UK_2024) dataset(UK_2019_a2.txt) country(UK)
+euromod_run, model($model_path) system(UK_2024) dataset(UK_2019_a2.txt) country(UK) constants("ITPerAll = '20000'")
 cd "`workingdir'"
 
 // The figures below should match the corresponding rows in the Statistics
