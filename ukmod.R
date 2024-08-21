@@ -1,3 +1,31 @@
+library(data.table)
+library(glue)
+library(RStata)
+
+options("RStata.StataPath" = "\"C:\\Program Files\\Stata18\\StataMP-64.exe\"")
+options("RStata.StataVersion" = 18)
+
+model_path <- "C:\\Users\\erik\\Documents\\GitHub\\income-tax-simulation\\UKMOD-PUBLIC-B2024.14"
+
+input_data <- fread("UKMOD-PUBLIC-B2024.14/Input/UK_2019_a2.txt")
+input_data
+
+output <- stata(
+  glue(
+    "euromod_run, model(\"{model_path}\") system(UK_2024_MIS) dataset(UK_2019_a2.txt) country(UK) constants(\"MISTaxIncr = '0.05'\")"
+  ),
+  data.in = input_data,
+  data.out = TRUE
+)
+
+output <- stata(
+  "drop if dgn == 0",
+  data.in = input_data,
+  data.out = TRUE
+)
+
+
+
 euromod_exe <- "C:\\Program Files\\EUROMOD\\Executable\\EM_ExecutableCaller.exe"
 project_dir <- here::here("UKMOD-PUBLIC-B2024.14")
 
@@ -5,6 +33,9 @@ timestamp <- format(Sys.time(), "%Y%m%d%H%M%S")
 input_dir   <- here::here("_ukmod_tmp", timestamp, "input")
 output_dir  <- here::here("_ukmod_tmp", timestamp, "output")
 config_path <- here::here("_ukmod_tmp", timestamp, "config.xml")
+
+
+
 
 input_filename <- "UK_2019_a2.txt"
 input_path <- file.path(project_dir, "Input", input_filename)
