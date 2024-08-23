@@ -9,7 +9,7 @@ options("RStata.StataVersion" = 18)
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
 current_dir <- here::here()
 
-input_data <- fread("UKMOD-PUBLIC-B2024.14/Input/UK_2019_a2.txt")
+input_data <- fread("UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt")
 
 baseline_output <- stata(
   paste(
@@ -18,7 +18,7 @@ baseline_output <- stata(
     # it to the correct one both at the start and the end to avoid intermittent
     # errors.
     glue("cd {current_dir}"),
-    glue("euromod_run, model(\"{model_path}\") system(UK_2024) dataset(UK_2019_a2.txt) country(UK)"),
+    glue("euromod_run, model(\"{model_path}\") system(UK_2024) dataset(UK_2022_a1.txt) country(UK)"),
     glue("cd {current_dir}"),
     sep = "\n"
   ),
@@ -41,7 +41,7 @@ for (top_rate in seq(0.90, 0.92, 0.01)) {
   output <- stata(
     paste(
       glue("cd {current_dir}"),
-      glue("euromod_run, model(\"{model_path}\") system(UK_2024_MIS) dataset(UK_2019_a2.txt) country(UK) constants(\"MISTaxIncr = '{top_rate}'\")"),
+      glue("euromod_run, model(\"{model_path}\") system(UK_2024_MIS) dataset(UK_2022_a1.txt) country(UK) constants(\"MISTaxIncr = '{top_rate}'\")"),
       glue("cd {current_dir}"),
       sep = "\n"
     ),
