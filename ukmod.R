@@ -1,4 +1,5 @@
 library(data.table)
+library(ggpubr)
 library(glue)
 library(RStata)
 
@@ -33,16 +34,14 @@ baseline_balance <- revenue - expenditure
 baseline_balance
 
 
-tax_incr <- 0.05
-
 results <- data.table()
 
-for (tax_incr in seq(0.01, 0.10, 0.01)) {
-  print(tax_incr)
+for (top_rate in seq(0.90, 0.92, 0.01)) {
+  print(top_rate)
   output <- stata(
     paste(
       glue("cd {current_dir}"),
-      glue("euromod_run, model(\"{model_path}\") system(UK_2024_MIS) dataset(UK_2019_a2.txt) country(UK) constants(\"MISTaxIncr = '{tax_incr}'\")"),
+      glue("euromod_run, model(\"{model_path}\") system(UK_2024_MIS) dataset(UK_2019_a2.txt) country(UK) constants(\"MISTaxIncr = '{top_rate}'\")"),
       glue("cd {current_dir}"),
       sep = "\n"
     ),
@@ -55,11 +54,14 @@ for (tax_incr in seq(0.01, 0.10, 0.01)) {
   expenditure <- output[, sum(dwt * ils_ben)]
   balance <- revenue - expenditure
   results <- rbind(results, data.table(
-    tax_incr = tax_incr,
+    top_rate = top_rate,
     balance = balance
   ))
 }
 
 results[, relative_balance := balance - baseline_balance]
-ggpubr::ggscatter(results, "tax_incr", "relative_balance") +
-  ggplot2::expand_limits(y = 0)
+ggscatter(results, "top_rate", "relative_balance", add = "reg.line") +
+  expand_limits(y = 0) +
+  geom_hline(yintercept = 0, linetype = "dashed")
+lm(relative_balance ~ top_rate, data = results)
+results
