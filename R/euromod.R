@@ -5,12 +5,14 @@ run_euromod <- function(
   data,
   system,
   dataset,
+  constants = list(),
   model_path,
   wd = here::here()
 ) {
   command <- euromod_command(
     system = system,
     dataset = dataset,
+    constants = constants,
     model_path = model_path
   )
   stata(
@@ -24,16 +26,33 @@ run_euromod <- function(
 euromod_command <- function(
   system,
   dataset,
+  constants = list(),
   model_path,
   wd = here::here()
 ) {
+  constant_string <- ifelse(
+    length(constants) > 0,
+    paste0(
+      " constants(",
+      paste0(
+        "\"",
+        names(constants),
+        " = '",
+        unlist(constants),
+        "'\"",
+        collapse = " "
+      ),
+      ")"
+    ),
+    ""
+  )
   paste(
     # The euromod_run command changes the working directory, and RStata relies
     # on the working directory remaining the same, so it's necessary to reset
     # it to the correct one both at the start and the end to avoid intermittent
     # errors.
     glue("cd {wd}"),
-    glue("euromod_run, model(\"{model_path}\") system({system}) dataset({dataset}) country(UK)"),
+    glue("euromod_run, model(\"{model_path}\") system({system}) dataset({dataset}) country(UK){constant_string}"),
     glue("cd {wd}"),
     sep = "\n"
   )
