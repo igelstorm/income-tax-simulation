@@ -63,3 +63,14 @@ ggscatter(
   expand_limits(y = 0) +
   geom_hline(yintercept = 0, linetype = "dashed")
 results
+
+# Gini almost matches that shown in Statistics Presenter (a few 0.001 off)
+baseline_output |>
+  _[,.(
+    income = sum(ils_dispy),
+    # income = sum(ils_origy),
+    weight = sum(dwt),
+    equiv = 0.67 + 0.33*(sum(dag >= 14) - 1) + 0.2*sum(dag <= 13)
+  ), by = "idhh"] |>
+  _[income >= 0] |>
+  _[, DescTools::Gini(income/equiv, weight)]
