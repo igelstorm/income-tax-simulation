@@ -25,14 +25,14 @@ baseline_balance
 
 results <- data.table()
 
-for (top_rate in seq(0.80, 0.82, 0.01)) {
+for (top_rate in c(0.185, 0.187)) {
   print(top_rate)
   output <- run_euromod(
     input_data,
     constants = list(
-      MISTaxIncr = top_rate
+      FlatRate = top_rate
     ),
-    system = "UK_2024_MIS",
+    system = "UK_2024_flat",
     dataset = "UK_2022_a1.txt",
     model_path = model_path
   )
