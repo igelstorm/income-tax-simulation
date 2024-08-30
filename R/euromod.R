@@ -15,7 +15,7 @@ run_euromod <- function(
     constants = constants,
     model_path = model_path
   )
-  stata(
+  RStata::stata(
     command,
     data.in = data,
     data.out = TRUE,
@@ -51,9 +51,9 @@ euromod_command <- function(
     # on the working directory remaining the same, so it's necessary to reset
     # it to the correct one both at the start and the end to avoid intermittent
     # errors.
-    glue("cd {wd}"),
-    glue("euromod_run, model(\"{model_path}\") system({system}) dataset({dataset}) country(UK){constant_string}"),
-    glue("cd {wd}"),
+    glue::glue("cd {wd}"),
+    glue::glue("euromod_run, model(\"{model_path}\") system({system}) dataset({dataset}) country(UK){constant_string}"),
+    glue::glue("cd {wd}"),
     sep = "\n"
   )
 }
