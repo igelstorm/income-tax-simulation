@@ -2112,7 +2112,7 @@
     <FirstSemester>-1</FirstSemester>
     <SecondSemester>-1</SecondSemester>
     <Default>June 30</Default>
-    <ValidFor>uk_2022, uk_2023, uk_2024, uk_2025, uk_2026, uk_2027, uk_2024_mis, uk_2024_flat</ValidFor>
+    <ValidFor>uk_2022, uk_2023, uk_2024, uk_2025, uk_2026, uk_2027, uk_2024_mis, uk_2024_flat, uk_2024_dk</ValidFor>
   </ExchangeRates>
   <ExchangeRates>
     <Country>UK15</Country>
