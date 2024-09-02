@@ -2,6 +2,7 @@ library(data.table)
 library(targets)
 
 source("R/euromod.R")
+source("R/summary.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
 
@@ -25,5 +26,7 @@ list(
     system = "UK_2024_flat",
     dataset = "UK_2022_a1.txt",
     model_path = model_path
-  ))
+  )),
+
+ tar_target(hls_baseline, high_level_summary(output_baseline))
 )
