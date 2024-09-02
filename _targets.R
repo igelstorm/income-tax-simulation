@@ -28,6 +28,11 @@ list(
     model_path = model_path
   )),
 
-   tar_target(high_level_summary_baseline, high_level_summary(output_baseline)),
-   tar_target(decile_summary_baseline, decile_summary(output_baseline))
+   tar_target(high_level_summary_baseline,  high_level_summary(output_baseline)),
+   tar_target(high_level_summary_mis,       high_level_summary(output_mis)),
+   tar_target(high_level_summary_flat,      high_level_summary(output_flat)),
+
+   tar_target(decile_summary_baseline,      decile_summary(output_baseline)),
+   tar_target(decile_summary_mis,           decile_summary(output_mis)),
+   tar_target(decile_summary_flat,          decile_summary(output_flat))
 )

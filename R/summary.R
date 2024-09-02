@@ -1,7 +1,11 @@
 cut_quantile <- function(x, q = 5, w = NULL) {
   cut(
     x,
-    Hmisc::wtd.quantile(x, weights = w, probs = 0:q/q),
+    # Using Hmisc::wtd.quantile here caused occasional edge cases to assign the
+    # quantile NA to the highest and lowest observations, presumably because of
+    # rounding/floating point errors in the 0th and 100th percentiles.
+    # DescTools::Quantile doesn't seem to have this problem.
+    DescTools::Quantile(x, weights = w, probs = 0:q/q),
     include.lowest = TRUE,
     labels = 1:q
   )
