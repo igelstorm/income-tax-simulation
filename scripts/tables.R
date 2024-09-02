@@ -17,8 +17,15 @@ data |>
     "Gini" = gini,
   ) |>
   transpose(keep.names = "Scenario", make.names = "scenario") |>
-  dplyr::mutate(MIS_diff = `MIS_value` - Baseline, .after = "MIS_value") |>
-  dplyr::mutate(Flat_diff = `Flat_value` - Baseline, .after = "Flat_value") |>
+  dplyr::mutate(MIS_diff = MIS_value - Baseline, .after = "MIS_value") |>
+  dplyr::mutate(Flat_diff = Flat_value - Baseline, .after = "Flat_value") |>
   gt() |>
+  tab_spanner_delim("_") |>
+  cols_label(
+    MIS_value = "",
+    Flat_value = "",
+    MIS_diff = "",
+    Flat_diff = "",
+  ) |>
   fmt_number(decimals = 2) |>
-  tab_spanner_delim("_")
+  fmt_number(ends_with("_diff"), decimals = 2, pattern = "({x})", force_sign = TRUE)
