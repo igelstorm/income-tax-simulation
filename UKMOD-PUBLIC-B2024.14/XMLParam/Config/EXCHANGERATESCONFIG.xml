@@ -2053,48 +2053,12 @@
   </ExchangeRates>
   <ExchangeRates>
     <Country>UK</Country>
-    <June30>0.8265</June30>
-    <YearAverage>0.81948</YearAverage>
-    <FirstSemester>-1</FirstSemester>
-    <SecondSemester>-1</SecondSemester>
-    <Default>June 30</Default>
-    <ValidFor>uk_2016</ValidFor>
-  </ExchangeRates>
-  <ExchangeRates>
-    <Country>UK</Country>
-    <June30>0.87933</June30>
-    <YearAverage>0.87667</YearAverage>
-    <FirstSemester>-1</FirstSemester>
-    <SecondSemester>-1</SecondSemester>
-    <Default>June 30</Default>
-    <ValidFor>uk_2017</ValidFor>
-  </ExchangeRates>
-  <ExchangeRates>
-    <Country>UK</Country>
-    <June30>0.8865</June30>
-    <YearAverage>0.88471</YearAverage>
-    <FirstSemester>-1</FirstSemester>
-    <SecondSemester>-1</SecondSemester>
-    <Default>June 30</Default>
-    <ValidFor>uk_2018</ValidFor>
-  </ExchangeRates>
-  <ExchangeRates>
-    <Country>UK</Country>
-    <June30>0.89718</June30>
-    <YearAverage>0.87777</YearAverage>
-    <FirstSemester>-1</FirstSemester>
-    <SecondSemester>-1</SecondSemester>
-    <Default>June 30</Default>
-    <ValidFor>uk_2019</ValidFor>
-  </ExchangeRates>
-  <ExchangeRates>
-    <Country>UK</Country>
     <June30>0.91243</June30>
     <YearAverage>0.8897</YearAverage>
     <FirstSemester>-1</FirstSemester>
     <SecondSemester>-1</SecondSemester>
     <Default>June 30</Default>
-    <ValidFor>uk_2020, uk_2020precovid19, uk_2020postcovid19</ValidFor>
+    <ValidFor>uk_2020precovid19, uk_2020postcovid19</ValidFor>
   </ExchangeRates>
   <ExchangeRates>
     <Country>UK</Country>
@@ -2103,7 +2067,7 @@
     <FirstSemester>-1</FirstSemester>
     <SecondSemester>-1</SecondSemester>
     <Default>June 30</Default>
-    <ValidFor>uk_2021, uk_2021precovid19, uk_2021postcovid19</ValidFor>
+    <ValidFor>uk_2021precovid19, uk_2021postcovid19</ValidFor>
   </ExchangeRates>
   <ExchangeRates>
     <Country>UK</Country>
@@ -2112,7 +2076,7 @@
     <FirstSemester>-1</FirstSemester>
     <SecondSemester>-1</SecondSemester>
     <Default>June 30</Default>
-    <ValidFor>uk_2022, uk_2023, uk_2024, uk_2025, uk_2026, uk_2027, uk_2024_mis, uk_2024_flat, uk_2024_dk</ValidFor>
+    <ValidFor>uk_2024, uk_2024_mis, uk_2024_flat, uk_2024_dk</ValidFor>
   </ExchangeRates>
   <ExchangeRates>
     <Country>UK15</Country>
