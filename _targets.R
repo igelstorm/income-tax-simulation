@@ -28,5 +28,6 @@ list(
     model_path = model_path
   )),
 
- tar_target(hls_baseline, high_level_summary(output_baseline))
+   tar_target(high_level_summary_baseline, high_level_summary(output_baseline)),
+   tar_target(decile_summary_baseline, decile_summary(output_baseline))
 )
