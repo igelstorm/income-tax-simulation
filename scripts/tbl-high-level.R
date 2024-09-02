@@ -24,8 +24,8 @@ data |>
   cols_label(
     MIS_value = "",
     Flat_value = "",
-    MIS_diff = "",
-    Flat_diff = "",
+    MIS_diff = "(change)",
+    Flat_diff = "(change)",
   ) |>
   fmt_number(decimals = 2) |>
   fmt_number(ends_with("_diff"), decimals = 2, pattern = "({x})", force_sign = TRUE)
