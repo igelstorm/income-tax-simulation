@@ -6,6 +6,27 @@ source("R/summary.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
 
+mis_constants <- list(
+  ITPerAll = "29500#y",
+  ITRate2 = "0.81",
+  ITRate3 = "0.81",
+  ITRate4S = "0.81",
+  ITRate5S = "0.81",
+  ITRate6S = "0.81"
+)
+flat_constants <- list(
+  ITPerAll = "0#y",
+  ITRate1 = "0.187",
+  ITRate2 = "0.187",
+  ITRate3 = "0.187",
+  ITRate1S = "0.187",
+  ITRate2S = "0.187",
+  ITRate3S = "0.187",
+  ITRate4S = "0.187",
+  ITRate5S = "0.187",
+  ITRate6S = "0.187"
+)
+
 list(
   tar_target(input_data, fread("UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt")),
 
@@ -19,32 +40,14 @@ list(
     input_data,
     system = "UK_2024",
     dataset = "UK_2022_a1.txt",
-    constants = list(
-      ITPerAll = "29500#y",
-      ITRate2 = "0.81",
-      ITRate3 = "0.81",
-      ITRate4S = "0.81",
-      ITRate5S = "0.81",
-      ITRate6S = "0.81"
-    ),
+    constants = mis_constants,
     model_path = model_path
   )),
   tar_target(output_flat, run_euromod(
     input_data,
     system = "UK_2024",
     dataset = "UK_2022_a1.txt",
-    constants = list(
-      ITPerAll = "0#y",
-      ITRate1 = "0.187",
-      ITRate2 = "0.187",
-      ITRate3 = "0.187",
-      ITRate1S = "0.187",
-      ITRate2S = "0.187",
-      ITRate3S = "0.187",
-      ITRate4S = "0.187",
-      ITRate5S = "0.187",
-      ITRate6S = "0.187"
-    ),
+    constants = flat_constants,
     model_path = model_path
   )),
 
