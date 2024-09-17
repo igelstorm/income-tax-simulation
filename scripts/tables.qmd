@@ -1,0 +1,19 @@
+---
+title: "Policy scenarios"
+format: docx
+# format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| file: tbl-high-level.R
+```
+
+```{r}
+#| file: tbl-decile-mean.R
+```
+
+```{r}
+#| file: tbl-decile-share.R
+```
