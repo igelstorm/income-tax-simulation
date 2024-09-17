@@ -1,3 +1,4 @@
+gbp_per_dkk <- 0.113
 mis_constants <- list(
   ITPerAll = "29500#y",
   ITRate2 = "0.81",
@@ -18,6 +19,30 @@ flat_constants <- list(
   ITRate5S = "0.187",
   ITRate6S = "0.187"
 )
+# https://boundlesshq.com/guides/denmark/taxes/
+# DKK 0 - 46,700        8%
+# DKK 46,701 - 544,800  40%
+# Over DKK 544,800      56.5%
+dk_constants <- list(
+  ITPerAll        = "0#y",                              # Personal Allowance
+  ITThresh1       = paste0(46700*gbp_per_dkk, "#y"),    # Higher Rate Threshold (HRT)
+  ITThresh2       = paste0(544800*gbp_per_dkk, "#y"),   # Additional Rate Threshold (ART)
+  ITRate1         = "0.08",                             # First tax rate
+  ITRate2         = "0.4",                              # Second tax rate
+  ITRate3         = "0.565",                            # Third tax rate
+  ITThresh1S      = "0#y",   # 2018/19 to current: Starter rate limit; 2016/17 to 2017/18: Intermediate rate
+  ITThresh2S      = "0#y",  # 2018/19 to current: Basic rate limit; 2016/17 to 2017/18: Higher rate limit
+  ITThresh3S      = paste0(46700*gbp_per_dkk, "#y"),     # Intermediate rate limit
+  ITThresh4S      = paste0(544800*gbp_per_dkk, "#y"),    # Higher rate limit
+  ITThresh5S      = paste0(544801*gbp_per_dkk, "#y"),    # Advanced
+  ITRate1S        = "0.08",     # 2018/19 to current: Starter rate: 2017/18: Basic rate (Scotland)
+  ITRate2S        = "0.08",      # 2018/19 to current: Basic rate; 2017/18: Higher rate (Scotland)
+  ITRate3S        = "0.08",     # 2018/19 to current: Intermediate rate; 2017/18: Additional rate (Scotland)
+  ITRate4S        = "0.40",     # Higher rate (Scotland)
+  ITRate5S        = "0.565",     # Advanced rate (Scotland)
+  ITRate6S        = "0.565"      # Top rate (Scotland)
+)
+
 default_constants_2024 <- list(
   ITPerAll        = "12570#y",  # Personal Allowance
   ITPerAll75      = NA,         # Personal Age Allowance (75+)
