@@ -1,9 +1,11 @@
+library(data.table)
 library(gt)
+library(targets)
 
 data <- list(
-  "Baseline" = tar_read(decile_summary_baseline),
-  "MIS_value" = tar_read(decile_summary_mis),
-  "Flat_value" = tar_read(decile_summary_flat)
+  "Baseline" = tar_read(decile_summary_baseline, store = here::here("_targets")),
+  "MIS_value" = tar_read(decile_summary_mis, store = here::here("_targets")),
+  "Flat_value" = tar_read(decile_summary_flat, store = here::here("_targets"))
 )
 
 data |>
