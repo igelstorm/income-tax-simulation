@@ -2,30 +2,10 @@ library(data.table)
 library(targets)
 
 source("R/euromod.R")
+source("R/policy_scenarios.R")
 source("R/summary.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
-
-mis_constants <- list(
-  ITPerAll = "29500#y",
-  ITRate2 = "0.81",
-  ITRate3 = "0.81",
-  ITRate4S = "0.81",
-  ITRate5S = "0.81",
-  ITRate6S = "0.81"
-)
-flat_constants <- list(
-  ITPerAll = "0#y",
-  ITRate1 = "0.187",
-  ITRate2 = "0.187",
-  ITRate3 = "0.187",
-  ITRate1S = "0.187",
-  ITRate2S = "0.187",
-  ITRate3S = "0.187",
-  ITRate4S = "0.187",
-  ITRate5S = "0.187",
-  ITRate6S = "0.187"
-)
 
 list(
   tar_target(input_data, fread("UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt")),
