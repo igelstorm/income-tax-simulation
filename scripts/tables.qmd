@@ -1,7 +1,7 @@
 ---
 title: "Policy scenarios"
-format: docx
-# format: html
+# format: docx
+format: html
 execute:
   echo: false
 ---
