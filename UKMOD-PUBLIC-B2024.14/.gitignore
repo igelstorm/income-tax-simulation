@@ -9,3 +9,6 @@ XMLParam/Temp/*.xml
 XMLParam/Temp/BackUp/*
 XMLParam/Temp/*.html
 *_in_use.txt
+
+Input/*.xls
+Input/*.xlsx
