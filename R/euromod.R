@@ -7,6 +7,7 @@ run_euromod <- function(
   dataset,
   constants = list(),
   model_path,
+  echo = FALSE,
   wd = here::here()
 ) {
   command <- euromod_command(
@@ -19,7 +20,7 @@ run_euromod <- function(
     command,
     data.in = data,
     data.out = TRUE,
-    stata.echo = TRUE
+    stata.echo = echo
   )
 }
 
