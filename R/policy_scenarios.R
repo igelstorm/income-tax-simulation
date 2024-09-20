@@ -7,6 +7,18 @@ mis_constants <- list(
   ITRate5S = "0.81",
   ITRate6S = "0.81"
 )
+mis2_constants <- list(
+  ITPerAll = "29500#y",
+  ITRate1         = "0.45",      # First tax rate
+  ITRate2         = "0.5",      # Second tax rate
+  ITRate3         = "0.5",     # Third tax rate
+  ITRate1S        = "0.45-0.01",     # 2018/19 to current: Starter rate: 2017/18: Basic rate (Scotland)
+  ITRate2S        = "0.45",      # 2018/19 to current: Basic rate; 2017/18: Higher rate (Scotland)
+  ITRate3S        = "0.45+0.01",     # 2018/19 to current: Intermediate rate; 2017/18: Additional rate (Scotland)
+  ITRate4S        = "0.5",     # Higher rate (Scotland)
+  ITRate5S        = "0.5",     # Advanced rate (Scotland)
+  ITRate6S        = "0.5"     # Top rate (Scotland)
+)
 flat_constants <- list(
   ITPerAll = "0#y",
   ITRate1 = "0.187",
