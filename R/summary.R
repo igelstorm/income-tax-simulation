@@ -22,6 +22,14 @@ create_hh_data <- function(data) {
   hh_data
 }
 
+create_hh_deciles <- function(data) {
+  hh_data <- create_hh_data(data)
+  hh_data[, .(
+    idhh,
+    inc_decile = cut_quantile(ils_dispy_eq, q = 10, w = dwt)
+  )]
+}
+
 high_level_summary <- function(data) {
   hh_data <- create_hh_data(data)
   hh_data[, inc_quintile := cut_quantile(ils_dispy_eq, q = 5, w = dwt)]
@@ -38,9 +46,9 @@ high_level_summary <- function(data) {
   )
 }
 
-decile_summary <- function(data) {
+decile_summary <- function(data, hh_deciles) {
   hh_data <- create_hh_data(data)
-  hh_data[, inc_decile := cut_quantile(ils_dispy_eq, q = 10, w = dwt)]
+  hh_data <- merge(hh_data, hh_deciles, by = "idhh")
 
   weeks_in_month <- (365 / 12) / 7
 
