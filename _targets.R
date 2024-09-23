@@ -51,11 +51,12 @@ list(
   tar_target(high_level_summary_flat,      high_level_summary(output_flat)),
   tar_target(high_level_summary_dk,        high_level_summary(output_dk)),
 
-  tar_target(decile_summary_baseline,      decile_summary(output_baseline, hh_deciles = create_hh_deciles(output_baseline))),
-  # TODO: these should use the income deciles from the baseline scenario
-  tar_target(decile_summary_mis,           decile_summary(output_mis2, hh_deciles = create_hh_deciles(output_mis2))),
-  tar_target(decile_summary_flat,          decile_summary(output_flat, hh_deciles = create_hh_deciles(output_flat))),
-  tar_target(decile_summary_dk,            decile_summary(output_dk, hh_deciles = create_hh_deciles(output_dk))),
+  tar_target(hh_deciles_baseline, create_hh_deciles(output_baseline)),
+
+  tar_target(decile_summary_baseline,      decile_summary(output_baseline, hh_deciles = hh_deciles_baseline)),
+  tar_target(decile_summary_mis,           decile_summary(output_mis2, hh_deciles = hh_deciles_baseline)),
+  tar_target(decile_summary_flat,          decile_summary(output_flat, hh_deciles = hh_deciles_baseline)),
+  tar_target(decile_summary_dk,            decile_summary(output_dk, hh_deciles = hh_deciles_baseline)),
 
   tar_target(triangulation_flat, triangulate_reform(
     data = input_data, system = "UK_2024", dataset = "UK_2022_a1.txt",
