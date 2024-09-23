@@ -11,7 +11,7 @@ cut_quantile <- function(x, q = 5, w = NULL) {
   )
 }
 
-high_level_summary <- function(data) {
+create_hh_data <- function(data) {
   setDT(data)
   hh_data <- data[,.(
     ils_dispy = sum(ils_dispy),
@@ -19,6 +19,11 @@ high_level_summary <- function(data) {
     equiv     = 0.67 + 0.33*(sum(dag >= 14) - 1) + 0.2*sum(dag <= 13)
   ), by = "idhh"]
   hh_data[, ils_dispy_eq := ils_dispy / equiv]
+  hh_data
+}
+
+high_level_summary <- function(data) {
+  hh_data <- create_hh_data(data)
   hh_data[, inc_quintile := cut_quantile(ils_dispy_eq, q = 5, w = dwt)]
 
   cbind(
@@ -34,13 +39,7 @@ high_level_summary <- function(data) {
 }
 
 decile_summary <- function(data) {
-  setDT(data)
-  hh_data <- data[,.(
-    ils_dispy = sum(ils_dispy),
-    dwt       = sum(dwt),
-    equiv     = 0.67 + 0.33*(sum(dag >= 14) - 1) + 0.2*sum(dag <= 13)
-  ), by = "idhh"]
-  hh_data[, ils_dispy_eq := ils_dispy / equiv]
+  hh_data <- create_hh_data(data)
   hh_data[, inc_decile := cut_quantile(ils_dispy_eq, q = 10, w = dwt)]
 
   weeks_in_month <- (365 / 12) / 7
