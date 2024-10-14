@@ -9,6 +9,18 @@ output <- foreach(
   data_dir = data_dirs$simpaths_output,
   .combine = rbind
 ) %do% {
+  person_data <- fread(
+    file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"),
+    select = c(
+      "run",
+      "time",
+      "id_Person",
+      "idBenefitUnit",
+      "dag",
+      "les_c4",
+      "dhm_ghq"
+    )
+  )
   bu_data <- fread(
     file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"),
     select = c(
