@@ -55,16 +55,18 @@ output <- foreach(
     level = "inc_decile",
     mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
-    mean_mhcase = mean(dhm_ghq)
+    mean_mhcase = mean(dhm_ghq),
+    poverty_rate = mean(atRiskOfPoverty)
   ), by = c("run", "time", "inc_decile")] |>
     _[order(run, time, inc_decile)]
 
   pop_stats <- merged_data[, .(
     scenario = scenario,
     level = "population",
-    poverty_rate = mean(atRiskOfPoverty),
+    mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
-    mean_inc = mean(equivalisedDisposableIncomeYearly)
+    mean_mhcase = mean(dhm_ghq),
+    poverty_rate = mean(atRiskOfPoverty)
   ), by = c("run", "time")] |>
     _[order(run, time)]
 
