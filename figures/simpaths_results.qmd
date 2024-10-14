@@ -1,0 +1,79 @@
+---
+title: "SimPaths results"
+# format: docx
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+library(data.table, quietly = TRUE)
+library(ggpubr, quietly = TRUE)
+
+raw_data <- fread(here::here("output/summary_data.csv"))
+
+data <- raw_data[, .(
+  mhcase = median(mean_mhcase),
+  mhcase_l = quantile(mean_mhcase, 0.025),
+  mhcase_u = quantile(mean_mhcase, 0.975),
+  emp = median(emp_rate),
+  emp_l = quantile(emp_rate, 0.025),
+  emp_u = quantile(emp_rate, 0.975)
+), by = c("level", "inc_decile", "scenario", "time")]
+```
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+```{r}
+data[inc_decile == 1] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Prevalence of GHQ caseness in the bottom income decile", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+```{r}
+data[level == "inc_decile"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario, color = inc_decile) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Prevalence of GHQ caseness across income deciles", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+---
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Employment rate in the population", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+```{r}
+data[inc_decile == 1] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+```{r}
+data[level == "inc_decile"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario, color = inc_decile) +
+  geom_pointrange(position = position_dodge(0.5)) +
+  labs(title = "Employment rate across income deciles", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
