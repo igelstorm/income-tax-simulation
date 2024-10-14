@@ -41,8 +41,8 @@ output <- foreach(scenario = scenarios) %do% {
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "multirun.jar",
     "-r", "100",    # random seed
-    "-p", "10000",  # population
-    "-n", "10",     # runs
+    "-p", "25000",  # population
+    "-n", "50",     # runs
     "-s", "2023",   # first year
     "-e", "2027",   # last year
     "-g", "false",
