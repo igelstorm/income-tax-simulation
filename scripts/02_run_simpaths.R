@@ -6,7 +6,7 @@ simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
 
 euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
 
-scenarios <- c("baseline", "flat")
+scenarios <- c("baseline", "mis", "flat")
 
 output <- foreach(scenario = scenarios) %do% {
   euromod_file_path |>
@@ -28,11 +28,11 @@ output <- foreach(scenario = scenarios) %do% {
 
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "multirun.jar",
-    "-r", "100",
-    "-p", "1000",
-    "-n", "2",
-    "-s", "2023",
-    "-e", "2024",
+    "-r", "100",    # random seed
+    "-p", "10000",  # population
+    "-n", "10",     # runs
+    "-s", "2023",   # first year
+    "-e", "2027",   # last year
     "-g", "false",
     "-f"
   )))
