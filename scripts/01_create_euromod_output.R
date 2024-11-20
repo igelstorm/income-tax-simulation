@@ -19,13 +19,16 @@ scenarios <- c(
 )
 
 for (scenario in scenarios) {
+  print(scenario)
   output_folder <- file.path("intermediate", "euromod", scenario)
   dir.create(output_folder, recursive = TRUE)
   for (year in years) {
+    print(year)
     out_path <- file.path(output_folder, glue("uk_{year}_std.txt"))
     if (file.exists(out_path) & skip_existing) { next }
     output <- run_euromod(
       input_data,
+      # echo = TRUE,
       system = glue("UK_{year}"),
       dataset = input_data_name,
       constants = scenario_parameters[[scenario]],
