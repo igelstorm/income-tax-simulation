@@ -2,7 +2,7 @@ library(data.table)
 library(foreach)
 library(withr)
 
-first_year  <- 2023
+first_year  <- 2024
 last_year   <- first_year + 9
 population  <- 50000
 runs        <- 10
