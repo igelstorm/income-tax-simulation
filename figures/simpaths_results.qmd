@@ -25,8 +25,12 @@ data <- raw_data[, .(
 ```{r}
 data[level == "population"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
-  geom_pointrange(position = position_dodge(0.5)) +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
   labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
   theme_pubr()
 ```
@@ -34,8 +38,12 @@ data[level == "population"] |>
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario) +
-  geom_pointrange(position = position_dodge(0.5)) +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
   labs(title = "Prevalence of GHQ caseness in the bottom income decile", x = "Year", y = "Prevalence") +
   theme_pubr()
 ```
@@ -54,8 +62,12 @@ data[level == "inc_decile"] |>
 ```{r}
 data[level == "population"] |>
   ggplot() +
-  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u, linetype = scenario) +
-  geom_pointrange(position = position_dodge(0.5)) +
+  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
   labs(title = "Employment rate in the population", x = "Year", y = "Prevalence") +
   theme_pubr()
 ```
@@ -63,8 +75,12 @@ data[level == "population"] |>
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
-  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u, linetype = scenario) +
-  geom_pointrange(position = position_dodge(0.5)) +
+  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
   labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Prevalence") +
   theme_pubr()
 ```
