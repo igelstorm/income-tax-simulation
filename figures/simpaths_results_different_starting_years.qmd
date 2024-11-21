@@ -1,0 +1,52 @@
+---
+title: "SimPaths results"
+# format: docx
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+library(data.table, quietly = TRUE)
+library(ggpubr, quietly = TRUE)
+
+raw_data <- fread(here::here("output/summary_data.csv"))
+raw_data[, scenario := as.character(scenario)]
+
+data <- raw_data[scenario != "2020", .(
+  mhcase = median(mean_mhcase),
+  mhcase_l = quantile(mean_mhcase, 0.025),
+  mhcase_u = quantile(mean_mhcase, 0.975),
+  emp = median(emp_rate),
+  emp_l = quantile(emp_rate, 0.025),
+  emp_u = quantile(emp_rate, 0.975)
+), by = c("level", "inc_decile", "scenario", "time")]
+```
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
+
+---
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
+  geom_line(aes(color = scenario)) +
+  geom_point(aes(color = scenario)) +
+  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
+  scale_color_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(title = "Employment rate in the population", x = "Year", y = "Prevalence") +
+  theme_pubr()
+```
