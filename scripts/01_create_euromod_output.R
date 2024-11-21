@@ -9,7 +9,7 @@ model_path <- here::here("UKMOD-PUBLIC-B2024.14")
 input_data <- fread("input/UK_2022_a1.txt")
 input_data_name <- "UK_2022_a1.txt"
 
-years <- 2023:2027
+years <- 2022:2027
 skip_existing <- TRUE
 
 scenarios <- c(

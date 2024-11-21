@@ -2,17 +2,21 @@ library(data.table)
 library(foreach)
 library(withr)
 
+population  <- 25000
+runs        <- 10
+scenario    <- "baseline"
+
 simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
 
 euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
 
-scenarios <- c("baseline", "mis", "flat")
-start_years <- 2020:2024
+start_years <- c(2022, 2024, 2026)
 
-output <- foreach(start_year = start_years) %do% {
+output <- foreach(first_year = start_years) %do% {
   timestamp()
-  print(start_year)
-  scenario <- "baseline"
+  print(first_year)
+  last_year   <- first_year + 9
+
   euromod_file_path |>
     list.files(pattern = "\\.txt$", full.names = TRUE) |>
     print()
@@ -34,7 +38,7 @@ output <- foreach(start_year = start_years) %do% {
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "singlerun.jar",
     "-c", "UK",
-    "-s", as.character(start_year),
+    "-s", format(first_year),
     "-g", "false",
     "-Setup",
     "--rewrite-policy-schedule"
@@ -43,10 +47,10 @@ output <- foreach(start_year = start_years) %do% {
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "multirun.jar",
     "-r", "100",    # random seed
-    "-p", "25000",  # population
-    "-n", "50",     # runs
-    "-s", as.character(start_year),   # first year
-    "-e", as.character(start_year + 4),   # last year
+    "-p", format(population),
+    "-n", format(runs),
+    "-s", format(first_year),
+    "-e", format(last_year),
     "-g", "false",
     "-f"
   )))
