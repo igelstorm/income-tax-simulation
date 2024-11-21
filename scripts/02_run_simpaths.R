@@ -3,8 +3,8 @@ library(foreach)
 library(withr)
 
 first_year  <- 2023
-last_year   <- first_year + 9
-population  <- 25000
+last_year   <- first_year + 4
+population  <- 50000
 runs        <- 10
 
 simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
