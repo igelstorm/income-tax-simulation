@@ -2,6 +2,11 @@ library(data.table)
 library(foreach)
 library(withr)
 
+first_year  <- 2023
+last_year   <- first_year + 9
+population  <- 25000
+runs        <- 10
+
 simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
 
 euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
@@ -32,7 +37,7 @@ output <- foreach(scenario = scenarios) %do% {
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "singlerun.jar",
     "-c", "UK",
-    "-s", "2023",
+    "-s", format(first_year),
     "-g", "false",
     "-Setup",
     "--rewrite-policy-schedule"
@@ -41,10 +46,10 @@ output <- foreach(scenario = scenarios) %do% {
   with_dir(simpaths_path, sys::exec_wait("java", c(
     "-jar", "multirun.jar",
     "-r", "100",    # random seed
-    "-p", "25000",  # population
-    "-n", "50",     # runs
-    "-s", "2023",   # first year
-    "-e", "2027",   # last year
+    "-p", format(population),
+    "-n", format(runs),
+    "-s", format(first_year),
+    "-e", format(last_year),
     "-g", "false",
     "-f"
   )))
