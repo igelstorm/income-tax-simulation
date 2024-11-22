@@ -63,7 +63,7 @@ output <- foreach(first_year = start_years) %do% {
   timestamp()
   print(latest_output_dir)
   data.table(
-    scenario = as.character(start_year),
+    scenario = as.character(first_year),
     simpaths_output = latest_output_dir
   )
 }
