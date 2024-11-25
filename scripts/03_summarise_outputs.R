@@ -12,10 +12,8 @@ output <- foreach(
   scenario = data_dirs[1, scenario]
   data_dir = data_dirs[1, simpaths_output]
 
-  fread(
-    file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"),
-    nrows = 1
-  ) |> names()
+  # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 1) |> names()
+  # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 10, select = "n_children_17")
 
   person_data <- fread(
     file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"),
@@ -25,7 +23,10 @@ output <- foreach(
       "id_Person",
       "idBenefitUnit",
       "dag",
+      "dgn",
+      "deh_c3",
       "les_c4",
+      "household_status",
       "dhm_ghq"
     )
   )
@@ -36,7 +37,8 @@ output <- foreach(
       "time",
       "id_BenefitUnit",
       "atRiskOfPoverty",
-      "equivalisedDisposableIncomeYearly"
+      "equivalisedDisposableIncomeYearly",
+      paste0("n_children_", 0:17)
     )
   )
   merged_data <- merge(
@@ -61,19 +63,21 @@ output <- foreach(
   # Calculate non-negative equivalised disposable income (with subzero values set to zero)
   merged_data[, nonneg_equiv_disp_inc := pmax(equivalisedDisposableIncomeYearly, 0)]
 
-  decile_stats <- merged_data[, .(
-    scenario = scenario,
-    level = "inc_decile",
-    mean_inc = mean(equivalisedDisposableIncomeYearly),
-    emp_rate = mean(employed, na.rm = TRUE),
-    mean_mhcase = mean(dhm_ghq),
-    poverty_rate = mean(atRiskOfPoverty)
-  ), by = c("run", "time", "inc_decile")] |>
-    _[order(run, time, inc_decile)]
+  # Limit to working-age population
+  final_data <- merged_data[dag >= 25 & dag <= 64]
 
-  pop_stats <- merged_data[, .(
+  # Create subgroups
+  final_data[dag >= 25 & dag <= 44, age_cat := "25_44"]
+  final_data[dag >= 45 & dag <= 64, age_cat := "45_64"]
+
+  final_data[, n_children := rowSums(.SD), .SDcols = c(paste0("n_children_", 0:17))]
+  final_data[n_children == 0, hh_structure := "No kids"]
+  final_data[household_status == "Couple" & n_children > 0, hh_structure := "Couple with kids"]
+  final_data[household_status == "Single" & n_children > 0, hh_structure := "Lone parent"]
+
+  pop_stats <- final_data[, .(
     scenario = scenario,
-    level = "population",
+    strata = "population",
     mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
     mean_mhcase = mean(dhm_ghq),
@@ -84,7 +88,28 @@ output <- foreach(
   ), by = c("run", "time")] |>
     _[order(run, time)]
 
-  rbind(decile_stats, pop_stats, fill = TRUE)
+  subgroup_stats <- function(data, subgroup_var) {
+    stats <- data[, .(
+      scenario = scenario,
+      strata = subgroup_var,
+      mean_inc = mean(equivalisedDisposableIncomeYearly),
+      emp_rate = mean(employed, na.rm = TRUE),
+      mean_mhcase = mean(dhm_ghq),
+      poverty_rate = mean(atRiskOfPoverty)
+    ), by = c("run", "time", subgroup_var)]
+    setorderv(stats, c("run", "time", subgroup_var))
+    stats
+  }
+
+  rbind(
+    pop_stats,
+    subgroup_stats(final_data, "inc_decile"),
+    subgroup_stats(final_data, "dgn"),
+    subgroup_stats(final_data, "deh_c3"),
+    subgroup_stats(final_data, "age_cat"),
+    subgroup_stats(final_data, "hh_structure"),
+    fill = TRUE
+  )
 }
 
 fwrite(output, "output/summary_data.csv")

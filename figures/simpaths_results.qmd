@@ -12,7 +12,10 @@ library(ggpubr, quietly = TRUE)
 
 raw_data <- fread(here::here("output/summary_data.csv"))
 
+subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat", "hh_structure")
+
 data <- raw_data[, .(
+  runs = .N,
   mhcase = median(mean_mhcase),
   mhcase_l = quantile(mean_mhcase, 0.025),
   mhcase_u = quantile(mean_mhcase, 0.975),
@@ -31,7 +34,7 @@ data <- raw_data[, .(
   s80s20 = median(s80s20, na.rm = TRUE),
   s80s20_l = quantile(s80s20, 0.025, na.rm = TRUE),
   s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE)
-), by = c("level", "inc_decile", "scenario", "time")]
+), by = c("strata", subgroups, "scenario", "time")]
 ```
 
 ```{r}
@@ -44,7 +47,7 @@ common_layers <- list(
   theme_pubr()
 )
 
-data[level == "population"] |>
+data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
   labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
@@ -62,7 +65,7 @@ data[inc_decile == 1] |>
 ---
 
 ```{r}
-data[level == "population"] |>
+data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
   labs(title = "Employment rate in the population", x = "Year", y = "Rate") +
@@ -102,7 +105,7 @@ data[inc_decile == 10] |>
 ## Income inequality
 
 ```{r}
-data[level == "population"] |>
+data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = gini, ymin = gini_l, ymax = gini_u) +
   labs(title = "Gini coefficient", x = "Year", y = "Gini coefficient") +
@@ -110,7 +113,7 @@ data[level == "population"] |>
 ```
 
 ```{r}
-data[level == "population"] |>
+data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = median_share, ymin = median_share_l, ymax = median_share_u) +
   labs(title = "Median share of income", subtitle = "Proportion of income earned by the bottom 50%", x = "Year", y = "Median share of income") +
@@ -118,9 +121,56 @@ data[level == "population"] |>
 ```
 
 ```{r}
-data[level == "population"] |>
+data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = s80s20, ymin = s80s20_l, ymax = s80s20_u) +
   labs(title = "S80/S20", subtitle = "Ratio of income share in the top quintile over income share in the bottom quintile", x = "Year", y = "S80/S20") +
+  common_layers
+```
+
+## Subgroups
+
+```{r}
+data[strata == "dgn"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  labs(title = "Prevalence of GHQ caseness stratified by gender", x = "Year", y = "Prevalence") +
+  facet_wrap("dgn") +
+  common_layers
+```
+
+```{r}
+data[strata == "deh_c3"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  labs(title = "Prevalence of GHQ caseness stratified by education", x = "Year", y = "Prevalence") +
+  facet_wrap("deh_c3") +
+  common_layers
+```
+
+```{r}
+data[strata == "age_cat"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  labs(title = "Prevalence of GHQ caseness stratified by age", x = "Year", y = "Prevalence") +
+  facet_wrap("age_cat") +
+  common_layers
+```
+
+```{r}
+data[strata == "hh_structure"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  labs(title = "Prevalence of GHQ caseness stratified by household structure", x = "Year", y = "Prevalence") +
+  facet_wrap("hh_structure") +
+  common_layers
+```
+
+```{r}
+data[strata == "inc_decile"] |>
+  ggplot() +
+  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  labs(title = "Prevalence of GHQ caseness stratified by income decile", x = "Year", y = "Prevalence") +
+  facet_wrap("inc_decile") +
   common_layers
 ```
