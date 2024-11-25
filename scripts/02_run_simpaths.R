@@ -11,7 +11,7 @@ simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
 
 euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
 
-scenarios <- c("baseline", "mis", "flat")
+scenarios <- c("baseline", "mis", "flat", "dk")
 
 output <- foreach(scenario = scenarios) %do% {
   timestamp()
