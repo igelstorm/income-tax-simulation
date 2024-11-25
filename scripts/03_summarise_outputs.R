@@ -9,6 +9,14 @@ output <- foreach(
   data_dir = data_dirs$simpaths_output,
   .combine = rbind
 ) %do% {
+  scenario = data_dirs[1, scenario]
+  data_dir = data_dirs[1, simpaths_output]
+
+  fread(
+    file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"),
+    nrows = 1
+  ) |> names()
+
   person_data <- fread(
     file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"),
     select = c(
@@ -50,6 +58,9 @@ output <- foreach(
   merged_data[dag >= 15 & dag <= 64, employed := FALSE]
   merged_data[les_c4 == "EmployedOrSelfEmployed", employed := TRUE]
 
+  # Calculate non-negative equivalised disposable income (with subzero values set to zero)
+  merged_data[, nonneg_equiv_disp_inc := pmax(equivalisedDisposableIncomeYearly, 0)]
+
   decile_stats <- merged_data[, .(
     scenario = scenario,
     level = "inc_decile",
@@ -66,7 +77,10 @@ output <- foreach(
     mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
     mean_mhcase = mean(dhm_ghq),
-    poverty_rate = mean(atRiskOfPoverty)
+    poverty_rate = mean(atRiskOfPoverty),
+    gini = DescTools::Gini(nonneg_equiv_disp_inc),
+    median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
+    s80s20 = sum((inc_decile >= 9) * nonneg_equiv_disp_inc) / sum((inc_decile <= 2) * nonneg_equiv_disp_inc)
   ), by = c("run", "time")] |>
     _[order(run, time)]
 

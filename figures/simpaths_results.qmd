@@ -18,43 +18,45 @@ data <- raw_data[, .(
   mhcase_u = quantile(mean_mhcase, 0.975),
   emp = median(emp_rate),
   emp_l = quantile(emp_rate, 0.025),
-  emp_u = quantile(emp_rate, 0.975)
+  emp_u = quantile(emp_rate, 0.975),
+  mean_inc = median(mean_inc),
+  mean_inc_l = quantile(mean_inc, 0.025),
+  mean_inc_u = quantile(mean_inc, 0.975),
+  gini = median(gini, na.rm = TRUE),
+  gini_l = quantile(gini, 0.025, na.rm = TRUE),
+  gini_u = quantile(gini, 0.975, na.rm = TRUE),
+  median_share = median(median_share, na.rm = TRUE),
+  median_share_l = quantile(median_share, 0.025, na.rm = TRUE),
+  median_share_u = quantile(median_share, 0.975, na.rm = TRUE),
+  s80s20 = median(s80s20, na.rm = TRUE),
+  s80s20_l = quantile(s80s20, 0.025, na.rm = TRUE),
+  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE)
 ), by = c("level", "inc_decile", "scenario", "time")]
 ```
 
 ```{r}
+common_layers <- list(
+  geom_line(aes(color = scenario)),
+  geom_point(aes(color = scenario)),
+  geom_ribbon(aes(fill = scenario), alpha = 0.05),
+  scale_color_brewer(palette = "Set1"),
+  scale_fill_brewer(palette = "Set1"),
+  theme_pubr()
+)
+
 data[level == "population"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
-  geom_line(aes(color = scenario)) +
-  geom_point(aes(color = scenario)) +
-  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
   labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
-  theme_pubr()
+  common_layers
 ```
 
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
-  geom_line(aes(color = scenario)) +
-  geom_point(aes(color = scenario)) +
-  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
   labs(title = "Prevalence of GHQ caseness in the bottom income decile", x = "Year", y = "Prevalence") +
-  theme_pubr()
-```
-
-```{r}
-data[level == "inc_decile"] |>
-  ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u, linetype = scenario, color = inc_decile) +
-  geom_pointrange(position = position_dodge(0.5)) +
-  labs(title = "Prevalence of GHQ caseness across income deciles", x = "Year", y = "Prevalence") +
-  theme_pubr()
+  common_layers
 ```
 
 ---
@@ -63,33 +65,62 @@ data[level == "inc_decile"] |>
 data[level == "population"] |>
   ggplot() +
   aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
-  geom_line(aes(color = scenario)) +
-  geom_point(aes(color = scenario)) +
-  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  labs(title = "Employment rate in the population", x = "Year", y = "Prevalence") +
-  theme_pubr()
+  labs(title = "Employment rate in the population", x = "Year", y = "Rate") +
+  common_layers
 ```
 
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
   aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
-  geom_line(aes(color = scenario)) +
-  geom_point(aes(color = scenario)) +
-  geom_ribbon(aes(fill = scenario), alpha = 0.05) +
-  scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
-  labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Prevalence") +
-  theme_pubr()
+  labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Rate") +
+  common_layers
+```
+
+---
+
+## Mean income
+
+```{r}
+data[inc_decile == 1] |>
+  ggplot() +
+  aes(x = time, y = mean_inc, ymin = mean_inc_l, ymax = mean_inc_u) +
+  labs(title = "Mean equivalised disposable household income (bottom decile)", x = "Year", y = "GBP per year") +
+  common_layers
 ```
 
 ```{r}
-data[level == "inc_decile"] |>
+data[inc_decile == 10] |>
   ggplot() +
-  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u, linetype = scenario, color = inc_decile) +
-  geom_pointrange(position = position_dodge(0.5)) +
-  labs(title = "Employment rate across income deciles", x = "Year", y = "Prevalence") +
-  theme_pubr()
+  aes(x = time, y = mean_inc, ymin = mean_inc_l, ymax = mean_inc_u) +
+  labs(title = "Mean equivalised disposable household income (top decile)", x = "Year", y = "GBP per year") +
+  common_layers
+```
+
+---
+
+## Income inequality
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = gini, ymin = gini_l, ymax = gini_u) +
+  labs(title = "Gini coefficient", x = "Year", y = "Gini coefficient") +
+  common_layers
+```
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = median_share, ymin = median_share_l, ymax = median_share_u) +
+  labs(title = "Median share of income", subtitle = "Proportion of income earned by the bottom 50%", x = "Year", y = "Median share of income") +
+  common_layers
+```
+
+```{r}
+data[level == "population"] |>
+  ggplot() +
+  aes(x = time, y = s80s20, ymin = s80s20_l, ymax = s80s20_u) +
+  labs(title = "S80/S20", subtitle = "Ratio of income share in the top quintile over income share in the bottom quintile", x = "Year", y = "S80/S20") +
+  common_layers
 ```
