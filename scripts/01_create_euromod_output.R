@@ -15,7 +15,8 @@ skip_existing <- TRUE
 scenarios <- c(
   "baseline",
   "mis",
-  "flat"
+  "flat",
+  "dk"
 )
 
 for (scenario in scenarios) {

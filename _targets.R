@@ -7,7 +7,7 @@ source("R/summary.R")
 source("R/triangulation.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
-input_data_path <- "UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt"
+input_data_path <- "input/UK_2022_a1.txt"
 input_data_filename <- "UK_2022_a1.txt"
 
 list(
@@ -88,6 +88,13 @@ list(
     ),
     x_values = c(0.40, 0.50)
   )),
+  tar_target(triangulation_dk, triangulate_reform(
+    data = input_data, system = "UK_2024", dataset = input_data_filename,
+    model_path = model_path, baseline_data = output_baseline,
+    reform_constants = dk_raw_params,
+    x_values = c(3.39, 3.395)
+  )),
   tar_target(tri_plot_flat, plot_triangulation(triangulation_flat, xlab = "Tax rate"), packages = "ggpubr"),
-  tar_target(tri_plot_mis, plot_triangulation(triangulation_mis, xlab = "Basic tax rate"), packages = "ggpubr")
+  tar_target(tri_plot_mis, plot_triangulation(triangulation_mis, xlab = "Basic tax rate"), packages = "ggpubr"),
+  tar_target(tri_plot_dk, plot_triangulation(triangulation_dk, xlab = "UC increase factor"), packages = "ggpubr")
 )

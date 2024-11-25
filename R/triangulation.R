@@ -44,7 +44,6 @@ plot_triangulation <- function(results, xlab) {
     ylab = "Government surplus relative to baseline",
     add = "reg.line"
   ) +
-    scale_x_continuous(labels = scales::label_percent()) +
     scale_y_continuous(labels = scales::label_currency(
       prefix = "£",
       scale_cut = scales::cut_short_scale()

@@ -1,4 +1,64 @@
+# DK scenario
 gbp_per_dkk <- 0.113
+x <- 3.392 # Factor to increase UC by
+
+dk_raw_params <- list(
+  # https://boundlesshq.com/guides/denmark/taxes/
+  # DKK 0 - 46,700        8%
+  # DKK 46,701 - 544,800  40%
+  # Over DKK 544,800      56.5%
+  ITPerAll        = "0#y",                              # Personal Allowance
+  ITThresh1       = paste0(46700*gbp_per_dkk, "#y"),    # Higher Rate Threshold (HRT)
+  ITThresh2       = paste0(544800*gbp_per_dkk, "#y"),   # Additional Rate Threshold (ART)
+  ITRate1         = "0.08",                             # First tax rate
+  ITRate2         = "0.4",                              # Second tax rate
+  ITRate3         = "0.565",                            # Third tax rate
+  ITThresh1S      = "0#y",   # 2018/19 to current: Starter rate limit; 2016/17 to 2017/18: Intermediate rate
+  ITThresh2S      = "0#y",  # 2018/19 to current: Basic rate limit; 2016/17 to 2017/18: Higher rate limit
+  ITThresh3S      = paste0(46700*gbp_per_dkk, "#y"),     # Intermediate rate limit
+  ITThresh4S      = paste0(544800*gbp_per_dkk, "#y"),    # Higher rate limit
+  ITThresh5S      = paste0(544801*gbp_per_dkk, "#y"),    # Advanced
+  ITRate1S        = "0.08",     # 2018/19 to current: Starter rate: 2017/18: Basic rate (Scotland)
+  ITRate2S        = "0.08",      # 2018/19 to current: Basic rate; 2017/18: Higher rate (Scotland)
+  ITRate3S        = "0.08",     # 2018/19 to current: Intermediate rate; 2017/18: Additional rate (Scotland)
+  ITRate4S        = "0.40",     # Higher rate (Scotland)
+  ITRate5S        = "0.565",     # Advanced rate (Scotland)
+  ITRate6S        = "0.565",     # Top rate (Scotland),
+
+  # Increase UC to compensate
+
+  UCNddHCCont       = "{x*91.47}#m",    # Universal Credit: Non-dependents' housing cost contribution
+  UCIncdisKidsDis1  = "{x*673}#m",      # Universal Credit: higher work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  UCIncdisKidsDis2  = "{x*404}#m",      # Universal Credit: lower work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  UCSing1824        = "{x*311.68}#m",   # Universal Credit: standard allowances: Single 18-24; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCSing25          = "{x*393.45}#m",   # Universal Credit: standard allowances: Single 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup1617        = "{x*489.23}#m",   # Universal Credit: standard allowances: Couple both under 25; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup18          = "{x*489.23}#m",   # Universal Credit: standard allowances: Couple both over 18 (18-24); in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup25          = "{x*617.6}#m",    # Universal Credit: standard allowances: Couple one or both 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCfam             = "{x*333.33}#m",   # Universal Credit: Family element (to be paid with the first child - assumed born prior to 6 April 2017)
+  UCchild           = "{x*287.92}#m",   # Universal Credit: Child Element (assumed to born after 6 April 2017)
+  UCDisChild        = "{x*156.11}#m",   # Universal Credit: additional amount for a disabled child: lower rate
+  UCSevDisChild     = "{x*487.58}#m",   # Universal Credit: additional amount for a disabled child: higher rate
+  UCLCW             = "{x*156.11}#m",   # Universal Credit: limited capacity for work (ex WRAG)
+  UCLCWRAG          = "{x*416.19}#m",   # Universal Credit: limited capability for work and work-related activity (ex SG)
+  UCcarer           = "{x*198.31}#m",   # Universal Credit: carer element
+  UCCC1ChMax        = "{x*1014.63}#m",  # Universal Credit: childcare costs element: maximum amount for one child
+  UCCC2ChMax        = "{x*1739.37}#m",  # Universal Credit: childcare costs element: maximum amount for two or more children
+
+  BcapHBSing        = "{x*14755}#y",    # Benefit cap: for single
+  BcapHBCoup        = "{x*22020}#y",    # Benefit cap: for couples
+  BcapHBLP          = "{x*22020}#y",    # Benefit cap: for lone parents
+  BcapHBLon         = "{x*25325}#y",    # Benefit cap: couples in London
+  BcapHBLonLP       = "{x*25325}#y",    # Benefit cap: lone parents in London
+  BcapHBLonSing     = "{x*16965}#y",    # Benefit cap: single in London
+  BcapMinEarn       = "{x*722}#m",      # Benefit cap: Minimum earning per benefit unit to avoid benefit cap
+  BcapUCwkids       = "{x*22020}#y",    # Benefit cap: Joint claimants and single claimants with children
+  BcapUCnokid       = "{x*14755}#y",    # Benefit cap: single claimants without children
+  BcapUCLon         = "{x*25325}#y",    # Benefit cap: in London: couple and lone parents
+  BcapUCLonsing     = "{x*16965}#y"     # Benefit cap: in London: single
+)
+dk_params <- dk_raw_params |> lapply(\(str) glue::glue_data(.x = list(x = x), str))
+
 scenario_parameters <- list(
   baseline = list(),
   mis = list(
@@ -33,29 +93,7 @@ scenario_parameters <- list(
     ITRate5S = "0.187",
     ITRate6S = "0.187"
   ),
-  # https://boundlesshq.com/guides/denmark/taxes/
-  # DKK 0 - 46,700        8%
-  # DKK 46,701 - 544,800  40%
-  # Over DKK 544,800      56.5%
-  dk = list(
-    ITPerAll        = "0#y",                              # Personal Allowance
-    ITThresh1       = paste0(46700*gbp_per_dkk, "#y"),    # Higher Rate Threshold (HRT)
-    ITThresh2       = paste0(544800*gbp_per_dkk, "#y"),   # Additional Rate Threshold (ART)
-    ITRate1         = "0.08",                             # First tax rate
-    ITRate2         = "0.4",                              # Second tax rate
-    ITRate3         = "0.565",                            # Third tax rate
-    ITThresh1S      = "0#y",   # 2018/19 to current: Starter rate limit; 2016/17 to 2017/18: Intermediate rate
-    ITThresh2S      = "0#y",  # 2018/19 to current: Basic rate limit; 2016/17 to 2017/18: Higher rate limit
-    ITThresh3S      = paste0(46700*gbp_per_dkk, "#y"),     # Intermediate rate limit
-    ITThresh4S      = paste0(544800*gbp_per_dkk, "#y"),    # Higher rate limit
-    ITThresh5S      = paste0(544801*gbp_per_dkk, "#y"),    # Advanced
-    ITRate1S        = "0.08",     # 2018/19 to current: Starter rate: 2017/18: Basic rate (Scotland)
-    ITRate2S        = "0.08",      # 2018/19 to current: Basic rate; 2017/18: Higher rate (Scotland)
-    ITRate3S        = "0.08",     # 2018/19 to current: Intermediate rate; 2017/18: Additional rate (Scotland)
-    ITRate4S        = "0.40",     # Higher rate (Scotland)
-    ITRate5S        = "0.565",     # Advanced rate (Scotland)
-    ITRate6S        = "0.565"      # Top rate (Scotland)
-  )
+  dk = dk_params
 )
 
 mis_constants <- scenario_parameters$mis
