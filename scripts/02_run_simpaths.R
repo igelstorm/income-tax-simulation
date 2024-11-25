@@ -4,8 +4,8 @@ library(withr)
 
 first_year  <- 2024
 last_year   <- first_year + 9
-population  <- 50000
-runs        <- 10
+population  <- 100000
+runs        <- 20
 
 simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
 
