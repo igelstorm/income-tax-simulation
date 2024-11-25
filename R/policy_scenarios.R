@@ -114,3 +114,48 @@ list(
   ITRate2W        = "0.1",      # Second rate (Wales)
   ITRate3W        = "0.1"       # Third rate (Wales)
 )
+
+# UC-related
+list(
+  UCcaplimsing      = "16000#c",    # Universal Credit: Capital limit for single claimant
+  Uccaplimcoup      = "16000#c",    # Universal Credit: Capital limit for joint claimants
+  UCNddHCCont       = "91.47#m",    # Universal Credit: Non-dependents' housing cost contribution
+  UCIncdis          = "0",          # Universal Credit: work allowance: not responsible for a child or qualifying young person (0 2016-)
+  UCIncdisKidsDis1  = "673#m",      # Universal Credit: higher work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  ondition          = "n/a",        # 515.00 increased to 557.00 from 24 November 2021 (before 2016 ds ddt01=-1)
+  UCIncdisKidsDis1  = "n/a",        # Universal Credit: higher work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  UCIncdisKidsDis2  = "404#m",      # Universal Credit: lower work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  UCIncdisKidsDis2  = "n/a",        # Universal Credit: lower work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
+  UCSing1824        = "311.68#m",   # Universal Credit: standard allowances: Single 18-24; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCSing25          = "393.45#m",   # Universal Credit: standard allowances: Single 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup1617        = "489.23#m",   # Universal Credit: standard allowances: Couple both under 25; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup18          = "489.23#m",   # Universal Credit: standard allowances: Couple both over 18 (18-24); in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCCoup25          = "617.6#m",    # Universal Credit: standard allowances: Couple one or both 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
+  UCSing1824        = "n/a",        # Universal Credit: standard allowances: Single 18-24
+  UCSing25          = "n/a",        # Universal Credit: standard allowances: Single 25 or over
+  UCCoup1617        = "n/a",        # Universal Credit: standard allowances: Couple both under 18
+  UCCoup18          = "n/a",        # Universal Credit: standard allowances: Couple both over 18 (18-24)
+  UCCoup25          = "n/a",        # Universal Credit: standard allowances: Couple one or both 25 or over
+  UCfam             = "333.33#m",   # Universal Credit: Family element (to be paid with the first child - assumed born prior to 6 April 2017)
+  UCchild           = "287.92#m",   # Universal Credit: Child Element (assumed to born after 6 April 2017)
+  UCDisChild        = "156.11#m",   # Universal Credit: additional amount for a disabled child: lower rate
+  UCSevDisChild     = "487.58#m",   # Universal Credit: additional amount for a disabled child: higher rate
+  UCLCW             = "156.11#m",   # Universal Credit: limited capacity for work (ex WRAG)
+  UCLCWRAG          = "416.19#m",   # Universal Credit: limited capability for work and work-related activity (ex SG)
+  UCcarer           = "198.31#m",   # Universal Credit: carer element
+  UCCC1ChMax        = "1014.63#m",  # Universal Credit: childcare costs element: maximum amount for one child
+  UCCC2ChMax        = "1739.37#m",  # Universal Credit: childcare costs element: maximum amount for two or more children
+  UCrate1           = "0.55",       # Universal Credit: withdrawal rate
+
+  BcapHBSing        = "14755#y",    # Benefit cap: for single
+  BcapHBCoup        = "22020#y",    # Benefit cap: for couples
+  BcapHBLP          = "22020#y",    # Benefit cap: for lone parents
+  BcapHBLon         = "25325#y",    # Benefit cap: couples in London
+  BcapHBLonLP       = "25325#y",    # Benefit cap: lone parents in London
+  BcapHBLonSing     = "16965#y",    # Benefit cap: single in London
+  BcapMinEarn       = "722#m",      # Benefit cap: Minimum earning per benefit unit to avoid benefit cap
+  BcapUCwkids       = "22020#y",    # Benefit cap: Joint claimants and single claimants with children
+  BcapUCnokid       = "14755#y",    # Benefit cap: single claimants without children
+  BcapUCLon         = "25325#y",    # Benefit cap: in London: couple and lone parents
+  BcapUCLonsing     = "16965#y"     # Benefit cap: in London: single
+)
