@@ -7,41 +7,43 @@ source("R/summary.R")
 source("R/triangulation.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
+input_data_path <- "UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt"
+input_data_filename <- "UK_2022_a1.txt"
 
 list(
-  tar_target(input_data, fread("UKMOD-PUBLIC-B2024.14/Input/UK_2022_a1.txt")),
+  tar_target(input_data, fread(input_data_path)),
 
   tar_target(output_baseline, run_euromod(
     input_data,
     system = "UK_2024",
-    dataset = "UK_2022_a1.txt",
+    dataset = input_data_filename,
     model_path = model_path
   )),
   tar_target(output_mis, run_euromod(
     input_data,
     system = "UK_2024",
-    dataset = "UK_2022_a1.txt",
+    dataset = input_data_filename,
     constants = mis_constants,
     model_path = model_path
   )),
   tar_target(output_mis2, run_euromod(
     input_data,
     system = "UK_2024",
-    dataset = "UK_2022_a1.txt",
+    dataset = input_data_filename,
     constants = mis2_constants,
     model_path = model_path
   )),
   tar_target(output_flat, run_euromod(
     input_data,
     system = "UK_2024",
-    dataset = "UK_2022_a1.txt",
+    dataset = input_data_filename,
     constants = flat_constants,
     model_path = model_path
   )),
   tar_target(output_dk, run_euromod(
     input_data,
     system = "UK_2024",
-    dataset = "UK_2022_a1.txt",
+    dataset = input_data_filename,
     constants = dk_constants,
     model_path = model_path
   )),
@@ -59,7 +61,7 @@ list(
   tar_target(decile_summary_dk,            decile_summary(output_dk, hh_deciles = hh_deciles_baseline)),
 
   tar_target(triangulation_flat, triangulate_reform(
-    data = input_data, system = "UK_2024", dataset = "UK_2022_a1.txt",
+    data = input_data, system = "UK_2024", dataset = input_data_filename,
     model_path = model_path, baseline_data = output_baseline,
     reform_constants = list(
       ITPerAll = "0#y",
@@ -70,7 +72,7 @@ list(
     x_values = c(0.185, 0.187)
   )),
   tar_target(triangulation_mis, triangulate_reform(
-    data = input_data, system = "UK_2024", dataset = "UK_2022_a1.txt",
+    data = input_data, system = "UK_2024", dataset = input_data_filename,
     model_path = model_path, baseline_data = output_baseline,
     reform_constants = list(
       ITPerAll = "29500#y",
