@@ -44,5 +44,9 @@ data |>
     "Personal allowance set to zero. Income tax for all bands set to a flat rate of 18.7% to achieve fiscal neutrality.",
     cells_column_spanners("spanner-Flat_value")
   ) |>
+  tab_footnote(
+    "Income tax bands set to replicate the Danish tax system. Universal Credit and Benefit Cap increased to achieve fiscal neutrality (by a factor of 3.4).",
+    cells_column_spanners("spanner-Denmark_value")
+  ) |>
   tab_source_note("Deciles calculated based on equivalised household disposable income.")
 

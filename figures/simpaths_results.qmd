@@ -11,8 +11,17 @@ library(data.table, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
 
 raw_data <- fread(here::here("output/summary_data.csv"))
+raw_data$scenario <- as.character(raw_data)
 
 subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat", "hh_structure")
+
+comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("run", "time", "strata", subgroups))
+comparison <- merge(
+  raw_data,
+  raw_data[scenario == "baseline"],
+  by = c("time", "strata", subgroups),
+  allow.cartesian = TRUE
+)
 
 data <- raw_data[, .(
   runs = .N,
@@ -173,4 +182,67 @@ data[strata == "inc_decile"] |>
   labs(title = "Prevalence of GHQ caseness stratified by income decile", x = "Year", y = "Prevalence") +
   facet_wrap("inc_decile") +
   common_layers
+```
+
+## Change in pairwise scenarios (population)
+
+```{r}
+comparison |>
+  _[scenario.x != "baseline"] |>
+  _[strata == "population"] |>
+  _[, .(scenario.x, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = "scenario.x") +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+comparison |>
+  _[scenario.x != "baseline"] |>
+  _[strata == "population"] |>
+  _[, .(scenario.x, Change = emp_rate.y - emp_rate.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = "scenario.x") +
+  geom_vline(xintercept = 0)
+```
+
+## Change in pairwise scenarios (subgroups)
+
+```{r}
+comparison[strata == "dgn"] |>
+  _[scenario.x != "baseline"] |>
+  _[, .(scenario.x, dgn, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "dgn")) +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+comparison[strata == "deh_c3"] |>
+  _[scenario.x != "baseline"] |>
+  _[, .(scenario.x, deh_c3, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "deh_c3")) +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+comparison[strata == "age_cat"] |>
+  _[scenario.x != "baseline"] |>
+  _[, .(scenario.x, age_cat, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "age_cat")) +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+comparison[strata == "hh_structure"] |>
+  _[scenario.x != "baseline"] |>
+  _[, .(scenario.x, hh_structure, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "hh_structure")) +
+  geom_vline(xintercept = 0)
+```
+
+```{r}
+comparison[strata == "inc_decile"] |>
+  _[inc_decile %in% c(1, 5, 10)] |>
+  _[scenario.x != "baseline"] |>
+  _[, .(scenario.x, inc_decile, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "inc_decile")) +
+  geom_vline(xintercept = 0)
 ```
