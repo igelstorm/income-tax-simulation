@@ -9,9 +9,6 @@ output <- foreach(
   data_dir = data_dirs$simpaths_output,
   .combine = rbind
 ) %do% {
-  scenario = data_dirs[1, scenario]
-  data_dir = data_dirs[1, simpaths_output]
-
   # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 1) |> names()
   # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 10, select = "n_children_17")
 
