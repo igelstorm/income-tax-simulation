@@ -11,7 +11,7 @@ library(data.table, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
 
 raw_data <- fread(here::here("output/summary_data.csv"))
-raw_data$scenario <- as.character(raw_data)
+raw_data$scenario <- as.character(raw_data$scenario)
 
 subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat")
 
