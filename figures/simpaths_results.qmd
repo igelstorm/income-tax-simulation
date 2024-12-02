@@ -13,7 +13,7 @@ library(ggpubr, quietly = TRUE)
 raw_data <- fread(here::here("output/summary_data.csv"))
 raw_data$scenario <- as.character(raw_data)
 
-subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat", "hh_structure")
+subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat")
 
 comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("run", "time", "strata", subgroups))
 comparison <- merge(
@@ -167,15 +167,6 @@ data[strata == "age_cat"] |>
 ```
 
 ```{r}
-data[strata == "hh_structure"] |>
-  ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
-  labs(title = "Prevalence of GHQ caseness stratified by household structure", x = "Year", y = "Prevalence") +
-  facet_wrap("hh_structure") +
-  common_layers
-```
-
-```{r}
 data[strata == "inc_decile"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
@@ -227,14 +218,6 @@ comparison[strata == "age_cat"] |>
   _[scenario.x != "baseline"] |>
   _[, .(scenario.x, age_cat, Change = mean_mhcase.y - mean_mhcase.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "age_cat")) +
-  geom_vline(xintercept = 0)
-```
-
-```{r}
-comparison[strata == "hh_structure"] |>
-  _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, hh_structure, Change = mean_mhcase.y - mean_mhcase.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "hh_structure")) +
   geom_vline(xintercept = 0)
 ```
 

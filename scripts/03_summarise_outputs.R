@@ -10,6 +10,7 @@ output <- foreach(
   .combine = rbind
 ) %do% {
   # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 1) |> names()
+  # fread(file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"), nrows = 1) |> names()
   # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 10, select = "n_children_17")
 
   person_data <- fread(
@@ -23,8 +24,8 @@ output <- foreach(
       "dgn",
       "deh_c3",
       "les_c4",
-      "household_status",
-      "dhm_ghq"
+      "dhm",
+      "dhmGhq"
     )
   )
   bu_data <- fread(
@@ -34,8 +35,8 @@ output <- foreach(
       "time",
       "id_BenefitUnit",
       "atRiskOfPoverty",
-      "equivalisedDisposableIncomeYearly",
-      paste0("n_children_", 0:17)
+      "equivalisedDisposableIncomeYearly"
+      # paste0("n_children_", 0:17)
     )
   )
   merged_data <- merge(
@@ -67,17 +68,17 @@ output <- foreach(
   final_data[dag >= 25 & dag <= 44, age_cat := "25_44"]
   final_data[dag >= 45 & dag <= 64, age_cat := "45_64"]
 
-  final_data[, n_children := rowSums(.SD), .SDcols = c(paste0("n_children_", 0:17))]
-  final_data[n_children == 0, hh_structure := "No kids"]
-  final_data[household_status == "Couple" & n_children > 0, hh_structure := "Couple with kids"]
-  final_data[household_status == "Single" & n_children > 0, hh_structure := "Lone parent"]
+  # final_data[, n_children := rowSums(.SD), .SDcols = c(paste0("n_children_", 0:17))]
+  # final_data[n_children == 0, hh_structure := "No kids"]
+  # final_data[household_status == "Couple" & n_children > 0, hh_structure := "Couple with kids"]
+  # final_data[household_status == "Single" & n_children > 0, hh_structure := "Lone parent"]
 
   pop_stats <- final_data[, .(
     scenario = scenario,
     strata = "population",
     mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
-    mean_mhcase = mean(dhm_ghq),
+    mean_mhcase = mean(dhmGhq),
     poverty_rate = mean(atRiskOfPoverty),
     gini = DescTools::Gini(nonneg_equiv_disp_inc),
     median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
@@ -91,7 +92,7 @@ output <- foreach(
       strata = subgroup_var,
       mean_inc = mean(equivalisedDisposableIncomeYearly),
       emp_rate = mean(employed, na.rm = TRUE),
-      mean_mhcase = mean(dhm_ghq),
+      mean_mhcase = mean(dhmGhq),
       poverty_rate = mean(atRiskOfPoverty)
     ), by = c("run", "time", subgroup_var)]
     setorderv(stats, c("run", "time", subgroup_var))
@@ -104,7 +105,7 @@ output <- foreach(
     subgroup_stats(final_data, "dgn"),
     subgroup_stats(final_data, "deh_c3"),
     subgroup_stats(final_data, "age_cat"),
-    subgroup_stats(final_data, "hh_structure"),
+    # subgroup_stats(final_data, "hh_structure"),
     fill = TRUE
   )
 }
