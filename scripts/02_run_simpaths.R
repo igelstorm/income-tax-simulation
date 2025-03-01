@@ -1,13 +1,17 @@
 library(data.table)
 library(foreach)
 library(withr)
+# Also required:
+# - R.utils
+# - here
+# - sys
 
 first_year  <- 2024
 last_year   <- first_year + 9
 population  <- 100000
 runs        <- 20
 
-simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
+simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 
 euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
 
@@ -26,7 +30,7 @@ output <- foreach(scenario = scenarios) %do% {
     list.files(pattern = "\\.txt$", full.names = TRUE) |>
     print()
 
-  euromod_files <- file.path("intermediate", "euromod", scenario) |>
+  euromod_files <- here::here("intermediate", "euromod", scenario) |>
     list.files(full.names = TRUE)
   print(euromod_files)
   file.copy(euromod_files, euromod_file_path)
