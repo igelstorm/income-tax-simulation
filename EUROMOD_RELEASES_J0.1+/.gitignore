@@ -1,0 +1,13 @@
+
+EM3Translation/XMLParam/*
+Input/*.txt
+Input/*.smcl
+Output/*.txt
+Output/*.smcl
+XMLParam/Temp/*.xml
+XMLParam/Temp/BackUp/*
+XMLParam/Temp/*.html
+*_in_use.txt
+
+Input/*.xls
+Input/*.xlsx
