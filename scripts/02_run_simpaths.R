@@ -8,8 +8,8 @@ library(withr)
 
 first_year  <- 2024
 last_year   <- first_year + 9
-population  <- 100000
-runs        <- 20
+population  <- 20000
+runs        <- 10
 
 simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 
@@ -43,8 +43,7 @@ output <- foreach(scenario = scenarios) %do% {
     "-c", "UK",
     "-s", format(first_year),
     "-g", "false",
-    "-Setup",
-    "--rewrite-policy-schedule"
+    "-Setup"
   )))
 
   with_dir(simpaths_path, sys::exec_wait("java", c(
