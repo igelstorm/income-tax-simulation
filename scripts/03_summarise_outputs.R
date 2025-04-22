@@ -1,20 +1,21 @@
 library(data.table)
 library(foreach)
 
-data_dirs <- fread("intermediate/simpaths_directories.csv")
-simpaths_path <- R.utils::getAbsolutePath("../SimPaths")
+data_dirs_path <- here::here("../simpaths-output/2025-03-02-income-tax-2023.12.08/simpaths_directories.csv")
+# simpaths_output_path <- here::here("../SimPaths/output")
+simpaths_output_path <- here::here("../simpaths-output")
+
+data_dirs <- fread(data_dirs_path)
 
 output <- foreach(
   scenario = data_dirs$scenario,
   data_dir = data_dirs$simpaths_output,
   .combine = rbind
 ) %do% {
-  # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 1) |> names()
-  # fread(file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"), nrows = 1) |> names()
-  # fread(file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"), nrows = 10, select = "n_children_17")
+  data_path <- file.path(simpaths_output_path, data_dir, "csv")
 
   person_data <- fread(
-    file.path(simpaths_path, "output", data_dir, "csv", "Person.csv"),
+    file.path(data_path, "Person.csv"),
     select = c(
       "run",
       "time",
@@ -29,7 +30,7 @@ output <- foreach(
     )
   )
   bu_data <- fread(
-    file.path(simpaths_path, "output", data_dir, "csv", "BenefitUnit.csv"),
+    file.path(data_path, "BenefitUnit.csv"),
     select = c(
       "run",
       "time",
