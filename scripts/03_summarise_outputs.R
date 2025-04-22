@@ -56,7 +56,7 @@ output <- foreach(
 
   # Calculate employment variable for purposes of employment rate
   merged_data[, employed := NA]
-  merged_data[dag >= 15 & dag <= 64, employed := FALSE]
+  merged_data[dag >= 16 & dag <= 64, employed := FALSE]
   merged_data[les_c4 == "EmployedOrSelfEmployed", employed := TRUE]
 
   # Calculate non-negative equivalised disposable income (with subzero values set to zero)
