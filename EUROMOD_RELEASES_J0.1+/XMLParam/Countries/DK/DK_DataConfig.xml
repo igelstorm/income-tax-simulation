@@ -10522,4 +10522,46 @@
       </PolicySwitch>
     </DBSystemConfig>
   </DataBase>
+  <DataBase>
+    <ID>fb7f8a37-7a53-4438-bb1a-9fbc06212250</ID>
+    <Name>UK_2022_a1</Name>
+    <Comment><![CDATA[]]></Comment>
+    <YearCollection>2022/23</YearCollection>
+    <YearInc>2022</YearInc>
+    <Currency>national</Currency>
+    <FilePath />
+    <DecimalSign>.</DecimalSign>
+    <Private>no</Private>
+    <UseCommonDefault>no</UseCommonDefault>
+    <ReadXVariables>no</ReadXVariables>
+    <ListStringOutVar />
+    <CoicopVersion />
+    <DBSystemConfig>
+      <SystemID>b9bd3ac8-4e16-4a18-8e0b-36d64394a0de</SystemID>
+      <SystemName>DK_2022</SystemName>
+      <DataBaseID>fb7f8a37-7a53-4438-bb1a-9fbc06212250</DataBaseID>
+      <UseDefault />
+      <UseCommonDefault>no</UseCommonDefault>
+      <Uprate />
+      <BestMatch>no</BestMatch>
+    </DBSystemConfig>
+    <DBSystemConfig>
+      <SystemID>4842a4e8-1161-4326-bc8d-855f860c5a67</SystemID>
+      <SystemName>DK_2023</SystemName>
+      <DataBaseID>fb7f8a37-7a53-4438-bb1a-9fbc06212250</DataBaseID>
+      <UseDefault />
+      <UseCommonDefault>no</UseCommonDefault>
+      <Uprate />
+      <BestMatch>no</BestMatch>
+    </DBSystemConfig>
+    <DBSystemConfig>
+      <SystemID>53b30e68-fa39-425e-8474-af60d31fbb82</SystemID>
+      <SystemName>DK_2024</SystemName>
+      <DataBaseID>fb7f8a37-7a53-4438-bb1a-9fbc06212250</DataBaseID>
+      <UseDefault />
+      <UseCommonDefault>no</UseCommonDefault>
+      <Uprate />
+      <BestMatch>no</BestMatch>
+    </DBSystemConfig>
+  </DataBase>
 </DataConfig>
