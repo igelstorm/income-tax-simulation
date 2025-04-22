@@ -25,7 +25,7 @@ scenarios = [
     "mis",
     "flat",
 ]
-years = range(2022, 2028)
+years = range(2024, 2028)
 
 policy_constants={
     "baseline": {},
