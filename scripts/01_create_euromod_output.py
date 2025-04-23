@@ -26,6 +26,7 @@ scenarios = [
     "flat",
 ]
 years = range(2024, 2028)
+intervention_year = 2026
 
 policy_constants={
     "baseline": {},
@@ -121,9 +122,13 @@ for scenario in scenarios:
 
     for year in years:
         print(f"{datetime.now()}: Running scenario '{scenario}', year {year}, output path: {output_path}")
+        if year >= intervention_year:
+            constants = policy_constants[scenario]
+        else:
+            constants = policy_constants["baseline"]
         uk_model.countries["UK"].systems[f"UK_{year}"].run(
             data,
             data_filename,
-            constantsToOverwrite=policy_constants[scenario],
+            constantsToOverwrite=constants,
             outputpath=output_path
        )

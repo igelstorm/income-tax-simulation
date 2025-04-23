@@ -10,10 +10,10 @@ input_data_path <- "input/UK_2022_a1.txt"
 input_data_filename <- "UK_2022_a1.txt"
 
 list(
-  tar_target(euromod_baseline_file,  "intermediate/euromod/baseline/uk_2024_std.txt", format = "file"),
-  tar_target(euromod_dk_file,        "intermediate/euromod/dk/uk_2024_std.txt", format = "file"),
-  tar_target(euromod_flat_file,      "intermediate/euromod/flat/uk_2024_std.txt", format = "file"),
-  tar_target(euromod_mis_file,       "intermediate/euromod/mis/uk_2024_std.txt", format = "file"),
+  tar_target(euromod_baseline_file,  "intermediate/euromod/baseline/uk_2026_std.txt", format = "file"),
+  tar_target(euromod_dk_file,        "intermediate/euromod/dk/uk_2026_std.txt", format = "file"),
+  tar_target(euromod_flat_file,      "intermediate/euromod/flat/uk_2026_std.txt", format = "file"),
+  tar_target(euromod_mis_file,       "intermediate/euromod/mis/uk_2026_std.txt", format = "file"),
 
   tar_target(euromod_baseline,   fread(euromod_baseline_file)),
   tar_target(euromod_dk,         fread(euromod_dk_file)),
