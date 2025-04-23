@@ -1,19 +1,14 @@
 library(data.table)
 library(foreach)
 
-data_dirs_path <- here::here("../simpaths-output/2025-03-02-income-tax-2023.12.08/simpaths_directories.csv")
-# simpaths_output_path <- here::here("../SimPaths/output")
-simpaths_output_path <- here::here("../simpaths-output")
-
-data_dirs <- fread(data_dirs_path)
+data_root_path <- here::here("intermediate", "simpaths")
+scenarios <- c("baseline", "mis", "flat", "dk")
 
 output <- foreach(
-  scenario = data_dirs$scenario,
-  data_dir = data_dirs$simpaths_output,
+  scenario = scenarios,
   .combine = rbind
 ) %do% {
-  data_path <- file.path(simpaths_output_path, data_dir, "csv")
-
+  data_path <- file.path(data_root_path, scenario)
   person_data <- fread(
     file.path(data_path, "Person.csv"),
     select = c(
@@ -26,7 +21,7 @@ output <- foreach(
       "deh_c3",
       "les_c4",
       "dhm",
-      "dhmGhq"
+      "dhm_ghq"
     )
   )
   bu_data <- fread(
@@ -79,7 +74,7 @@ output <- foreach(
     strata = "population",
     mean_inc = mean(equivalisedDisposableIncomeYearly),
     emp_rate = mean(employed, na.rm = TRUE),
-    mean_mhcase = mean(dhmGhq),
+    mean_mhcase = mean(dhm_ghq),
     poverty_rate = mean(atRiskOfPoverty),
     gini = DescTools::Gini(nonneg_equiv_disp_inc),
     median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
@@ -93,7 +88,7 @@ output <- foreach(
       strata = subgroup_var,
       mean_inc = mean(equivalisedDisposableIncomeYearly),
       emp_rate = mean(employed, na.rm = TRUE),
-      mean_mhcase = mean(dhmGhq),
+      mean_mhcase = mean(dhm_ghq),
       poverty_rate = mean(atRiskOfPoverty)
     ), by = c("run", "time", subgroup_var)]
     setorderv(stats, c("run", "time", subgroup_var))

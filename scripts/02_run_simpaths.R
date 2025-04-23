@@ -8,31 +8,29 @@ library(withr)
 
 first_year  <- 2024
 last_year   <- first_year + 9
-population  <- 20000
-runs        <- 10
+population  <- 10000
+runs        <- 1
 
 simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
+results_root_path <- here::here("intermediate", "simpaths")
 
-euromod_file_path <- file.path(simpaths_path, "input","EUROMODoutput")
+euromod_file_path <- file.path(simpaths_path, "input", "EUROMODoutput")
 
 scenarios <- c("baseline", "mis", "flat", "dk")
 
-output <- foreach(scenario = scenarios) %do% {
+for (scenario in scenarios) {
   timestamp()
   print(scenario)
-  euromod_file_path |>
-    list.files(pattern = "\\.txt$", full.names = TRUE) |>
-    print()
+  if (dir.exists(results_path <- file.path(results_root_path, scenario))) {
+    print("Already run")
+    next
+  }
   euromod_file_path |>
     list.files(pattern = "\\.txt$", full.names = TRUE) |>
     file.remove()
-  euromod_file_path |>
-    list.files(pattern = "\\.txt$", full.names = TRUE) |>
-    print()
 
   euromod_files <- here::here("intermediate", "euromod", scenario) |>
     list.files(full.names = TRUE)
-  print(euromod_files)
   file.copy(euromod_files, euromod_file_path)
   euromod_file_path |>
     list.files(pattern = "\\.txt$", full.names = TRUE) |>
@@ -62,13 +60,15 @@ output <- foreach(scenario = scenarios) %do% {
     sort() |>
     tail(n = 1)
 
-  timestamp()
   print(latest_output_dir)
-  data.table(
-    scenario = scenario,
-    simpaths_output = latest_output_dir
+  output_path <- file.path(simpaths_path, "output", latest_output_dir, "csv")
+  output_files <- list.files(output_path, full.names = TRUE, recursive = TRUE)
+  dir.create(results_path, recursive = TRUE)
+  file.copy(
+    output_files,
+    results_path
   )
-}
+  writeLines(latest_output_dir, file.path(results_path, "output_dir.txt"))
 
-rbindlist(output) |>
-  fwrite("intermediate/simpaths_directories.csv")
+  timestamp()
+}
