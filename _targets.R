@@ -2,6 +2,7 @@ library(data.table)
 library(targets)
 
 source("R/euromod_summary.R")
+source("R/simpaths_summary.R")
 # source("R/triangulation.R")
 
 model_path <- here::here("UKMOD-PUBLIC-B2024.14")
@@ -30,6 +31,31 @@ list(
   tar_target(decile_summary_mis,           decile_summary(euromod_mis, hh_deciles = hh_deciles_baseline)),
   tar_target(decile_summary_flat,          decile_summary(euromod_flat, hh_deciles = hh_deciles_baseline)),
   tar_target(decile_summary_dk,            decile_summary(euromod_dk, hh_deciles = hh_deciles_baseline)),
+
+  tar_target(simpaths_person_file_baseline, "intermediate/simpaths/baseline/Person.csv"),
+  tar_target(simpaths_person_file_dk,       "intermediate/simpaths/dk/Person.csv"),
+  tar_target(simpaths_person_file_flat,     "intermediate/simpaths/flat/Person.csv"),
+  tar_target(simpaths_person_file_mis,      "intermediate/simpaths/mis/Person.csv"),
+
+  tar_target(simpaths_bu_file_baseline,     "intermediate/simpaths/baseline/BenefitUnit.csv"),
+  tar_target(simpaths_bu_file_dk,           "intermediate/simpaths/dk/BenefitUnit.csv"),
+  tar_target(simpaths_bu_file_flat,         "intermediate/simpaths/flat/BenefitUnit.csv"),
+  tar_target(simpaths_bu_file_mis,          "intermediate/simpaths/mis/BenefitUnit.csv"),
+
+  tar_target(simpaths_person_baseline,  read_person_data(simpaths_person_file_baseline)),
+  tar_target(simpaths_person_dk,        read_person_data(simpaths_person_file_dk)),
+  tar_target(simpaths_person_flat,      read_person_data(simpaths_person_file_flat)),
+  tar_target(simpaths_person_mis,       read_person_data(simpaths_person_file_mis)),
+
+  tar_target(simpaths_bu_baseline,      read_bu_data(simpaths_bu_file_baseline)),
+  tar_target(simpaths_bu_dk,            read_bu_data(simpaths_bu_file_dk)),
+  tar_target(simpaths_bu_flat,          read_bu_data(simpaths_bu_file_flat)),
+  tar_target(simpaths_bu_mis,           read_bu_data(simpaths_bu_file_mis)),
+
+  tar_target(simpaths_summary_baseline,   create_simpaths_summary(simpaths_person_baseline, simpaths_bu_baseline)),
+  tar_target(simpaths_summary_dk,         create_simpaths_summary(simpaths_person_dk, simpaths_bu_dk)),
+  tar_target(simpaths_summary_flat,       create_simpaths_summary(simpaths_person_flat, simpaths_bu_flat)),
+  tar_target(simpaths_summary_mis,        create_simpaths_summary(simpaths_person_mis, simpaths_bu_mis)),
 
   # tar_target(triangulation_flat, triangulate_reform(
   #   data = input_data, system = "UK_2024", dataset = input_data_filename,

@@ -9,8 +9,14 @@ execute:
 ```{r}
 library(data.table, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
+library(targets, quietly = TRUE)
 
-raw_data <- fread(here::here("output/summary_data.csv"))
+raw_data <- rbindlist(list(
+  baseline  = tar_read(simpaths_summary_baseline, store = here::here("_targets")),
+  dk        = tar_read(simpaths_summary_dk, store = here::here("_targets")),
+  flat      = tar_read(simpaths_summary_flat, store = here::here("_targets")),
+  mis       = tar_read(simpaths_summary_mis, store = here::here("_targets"))
+), idcol = "scenario")
 raw_data$scenario <- as.character(raw_data$scenario)
 
 subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat")

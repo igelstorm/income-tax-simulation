@@ -1,3 +1,5 @@
 *.docx
 *.html
 *_files/
+
+/.quarto/
