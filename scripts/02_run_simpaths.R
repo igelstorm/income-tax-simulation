@@ -8,8 +8,8 @@ library(withr)
 
 first_year  <- 2024
 last_year   <- first_year + 9
-population  <- 10000
-runs        <- 1
+population  <- 20000
+runs        <- 10
 
 simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 results_root_path <- here::here("intermediate", "simpaths")
