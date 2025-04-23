@@ -10,10 +10,10 @@ input_data_path <- "input/UK_2022_a1.txt"
 input_data_filename <- "UK_2022_a1.txt"
 
 list(
-  tar_target(euromod_baseline_file,  "intermediate/euromod/baseline/uk_2024_std.txt"),
-  tar_target(euromod_dk_file,        "intermediate/euromod/dk/uk_2024_std.txt"),
-  tar_target(euromod_flat_file,      "intermediate/euromod/flat/uk_2024_std.txt"),
-  tar_target(euromod_mis_file,       "intermediate/euromod/mis/uk_2024_std.txt"),
+  tar_target(euromod_baseline_file,  "intermediate/euromod/baseline/uk_2024_std.txt", format = "file"),
+  tar_target(euromod_dk_file,        "intermediate/euromod/dk/uk_2024_std.txt", format = "file"),
+  tar_target(euromod_flat_file,      "intermediate/euromod/flat/uk_2024_std.txt", format = "file"),
+  tar_target(euromod_mis_file,       "intermediate/euromod/mis/uk_2024_std.txt", format = "file"),
 
   tar_target(euromod_baseline,   fread(euromod_baseline_file)),
   tar_target(euromod_dk,         fread(euromod_dk_file)),
@@ -32,15 +32,15 @@ list(
   tar_target(decile_summary_flat,          decile_summary(euromod_flat, hh_deciles = hh_deciles_baseline)),
   tar_target(decile_summary_dk,            decile_summary(euromod_dk, hh_deciles = hh_deciles_baseline)),
 
-  tar_target(simpaths_person_file_baseline, "intermediate/simpaths/baseline/Person.csv"),
-  tar_target(simpaths_person_file_dk,       "intermediate/simpaths/dk/Person.csv"),
-  tar_target(simpaths_person_file_flat,     "intermediate/simpaths/flat/Person.csv"),
-  tar_target(simpaths_person_file_mis,      "intermediate/simpaths/mis/Person.csv"),
+  tar_target(simpaths_person_file_baseline, "intermediate/simpaths/baseline/Person.csv", format = "file"),
+  tar_target(simpaths_person_file_dk,       "intermediate/simpaths/dk/Person.csv", format = "file"),
+  tar_target(simpaths_person_file_flat,     "intermediate/simpaths/flat/Person.csv", format = "file"),
+  tar_target(simpaths_person_file_mis,      "intermediate/simpaths/mis/Person.csv", format = "file"),
 
-  tar_target(simpaths_bu_file_baseline,     "intermediate/simpaths/baseline/BenefitUnit.csv"),
-  tar_target(simpaths_bu_file_dk,           "intermediate/simpaths/dk/BenefitUnit.csv"),
-  tar_target(simpaths_bu_file_flat,         "intermediate/simpaths/flat/BenefitUnit.csv"),
-  tar_target(simpaths_bu_file_mis,          "intermediate/simpaths/mis/BenefitUnit.csv"),
+  tar_target(simpaths_bu_file_baseline,     "intermediate/simpaths/baseline/BenefitUnit.csv", format = "file"),
+  tar_target(simpaths_bu_file_dk,           "intermediate/simpaths/dk/BenefitUnit.csv", format = "file"),
+  tar_target(simpaths_bu_file_flat,         "intermediate/simpaths/flat/BenefitUnit.csv", format = "file"),
+  tar_target(simpaths_bu_file_mis,          "intermediate/simpaths/mis/BenefitUnit.csv", format = "file"),
 
   tar_target(simpaths_person_baseline,  read_person_data(simpaths_person_file_baseline)),
   tar_target(simpaths_person_dk,        read_person_data(simpaths_person_file_dk)),
