@@ -48,9 +48,17 @@ data <- raw_data[, .(
   median_share_u = quantile(median_share, 0.975, na.rm = TRUE),
   s80s20 = median(s80s20, na.rm = TRUE),
   s80s20_l = quantile(s80s20, 0.025, na.rm = TRUE),
-  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE)
+  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE),
+  sii = median(sii, na.rm = TRUE),
+  sii_l = quantile(sii, 0.025, na.rm = TRUE),
+  sii_u = quantile(sii, 0.975, na.rm = TRUE),
+  rii = median(rii, na.rm = TRUE),
+  rii_l = quantile(rii, 0.025, na.rm = TRUE),
+  rii_u = quantile(rii, 0.975, na.rm = TRUE)
 ), by = c("strata", subgroups, "scenario", "time")]
 ```
+
+## GHQ caseness
 
 ```{r}
 common_layers <- list(
@@ -77,7 +85,7 @@ data[inc_decile == 1] |>
   common_layers
 ```
 
----
+## Employment rate
 
 ```{r}
 data[strata == "population"] |>
@@ -95,7 +103,23 @@ data[inc_decile == 1] |>
   common_layers
 ```
 
----
+## Inequality in GHQ caseness
+
+```{r}
+data[strata == "population"] |>
+  ggplot() +
+  aes(x = time, y = sii, ymin = sii_l, ymax = sii_u) +
+  labs(title = "Slope index of inequality", x = "Year", y = "Risk of GHQ caseness") +
+  common_layers
+```
+
+```{r}
+data[strata == "population"] |>
+  ggplot() +
+  aes(x = time, y = rii, ymin = rii_l, ymax = rii_u) +
+  labs(title = "Relative index of inequality", x = "Year", y = "RII") +
+  common_layers
+```
 
 ## Mean income
 

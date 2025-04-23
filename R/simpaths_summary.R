@@ -65,6 +65,18 @@ create_simpaths_summary <- function(person_data, bu_data) {
   # final_data[household_status == "Couple" & n_children > 0, hh_structure := "Couple with kids"]
   # final_data[household_status == "Single" & n_children > 0, hh_structure := "Lone parent"]
 
+  # Calculate SII and RII
+  final_data[, income_rank := rank(equivalisedDisposableIncomeYearly) / .N, by = c("run", "time")]
+  inequality <- final_data[, {
+    model <- glm(dhm_ghq ~ income_rank, family = binomial(link = "log"))
+    intercept <- coef(model)["(Intercept)"]
+    slope <- coef(model)["income_rank"]
+    list(
+      sii = exp(intercept + slope) - exp(intercept),
+      rii = exp(slope)
+    )
+  }, by = c("run", "time")]
+
   pop_stats <- final_data[, .(
     strata = "population",
     mean_inc = mean(equivalisedDisposableIncomeYearly),
@@ -75,7 +87,8 @@ create_simpaths_summary <- function(person_data, bu_data) {
     median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
     s80s20 = sum((inc_decile >= 9) * nonneg_equiv_disp_inc) / sum((inc_decile <= 2) * nonneg_equiv_disp_inc)
   ), by = c("run", "time")] |>
-    _[order(run, time)]
+    _[order(run, time)] |>
+    merge(inequality, by = c("run", "time"))
 
   subgroup_stats <- function(data, subgroup_var) {
     stats <- data[, .(
