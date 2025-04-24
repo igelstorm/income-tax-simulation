@@ -14,6 +14,10 @@ sdcols <- c(
   "rii"
 )
 
+    # # Alternatively, averaged across all post-intervention years:
+    # _[strata == "population" & time %in% 2026:2033] |>
+    # _[, lapply(.SD, mean), .SDcols = sdcols, by = c("run")] |>
+    # _[, lapply(.SD, median), .SDcols = sdcols]
 data <- list(
   "Baseline" = tar_read(simpaths_summary_baseline, store = here::here("_targets")) |>
     _[strata == "population" & time == 2026] |>
