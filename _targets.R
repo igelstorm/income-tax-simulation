@@ -2,6 +2,7 @@ library(data.table)
 library(targets)
 
 source("R/euromod_summary.R")
+source("R/intervention_effects.R")
 source("R/simpaths_summary.R")
 # source("R/triangulation.R")
 
@@ -56,6 +57,10 @@ list(
   tar_target(simpaths_summary_dk,         create_simpaths_summary(simpaths_person_dk, simpaths_bu_dk)),
   tar_target(simpaths_summary_flat,       create_simpaths_summary(simpaths_person_flat, simpaths_bu_flat)),
   tar_target(simpaths_summary_mis,        create_simpaths_summary(simpaths_person_mis, simpaths_bu_mis)),
+
+  tar_target(effects_dk, calculate_difference(simpaths_summary_baseline, simpaths_summary_dk)),
+  tar_target(effects_flat, calculate_difference(simpaths_summary_baseline, simpaths_summary_flat)),
+  tar_target(effects_mis, calculate_difference(simpaths_summary_baseline, simpaths_summary_mis)),
 
   # tar_target(triangulation_flat, triangulate_reform(
   #   data = input_data, system = "UK_2024", dataset = input_data_filename,
