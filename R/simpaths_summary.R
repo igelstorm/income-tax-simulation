@@ -72,8 +72,8 @@ create_simpaths_summary <- function(person_data, bu_data) {
     intercept <- coef(model)["(Intercept)"]
     slope <- coef(model)["income_rank"]
     list(
-      sii = exp(intercept + slope) - exp(intercept),
-      rii = exp(slope)
+      sii = exp(intercept) - exp(intercept + slope),
+      log_rii = -slope
     )
   }, by = c("run", "time")]
 

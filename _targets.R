@@ -58,6 +58,11 @@ list(
   tar_target(simpaths_summary_flat,       create_simpaths_summary(simpaths_person_flat, simpaths_bu_flat)),
   tar_target(simpaths_summary_mis,        create_simpaths_summary(simpaths_person_mis, simpaths_bu_mis)),
 
+  tar_target(estimates_baseline, calculate_cis(simpaths_summary_baseline)),
+  tar_target(estimates_dk, calculate_cis(simpaths_summary_dk)),
+  tar_target(estimates_flat, calculate_cis(simpaths_summary_flat)),
+  tar_target(estimates_mis, calculate_cis(simpaths_summary_mis)),
+
   tar_target(effects_dk, calculate_difference(simpaths_summary_baseline, simpaths_summary_dk)),
   tar_target(effects_flat, calculate_difference(simpaths_summary_baseline, simpaths_summary_flat)),
   tar_target(effects_mis, calculate_difference(simpaths_summary_baseline, simpaths_summary_mis)),
