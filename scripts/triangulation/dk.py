@@ -6,8 +6,8 @@ import pandas as pd
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
-data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data
-data_filename="UK_2015_a4"
+data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data"
+data_filename="UK_2022_a1"
 
 uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2024.16"
 data_path=f"{data_directory}/{data_filename}.txt"
@@ -21,7 +21,7 @@ uk_model=Model(uk_model_path)
 
 year = 2026
 gbp_per_dkk = 0.113
-x_values = [3.1109, 3.111, 3.1111]
+x_values = [3.273, 3.274, 3.275]
 
 # Calculate baseline (bl) revenue and expenditure
 output = uk_model.countries["UK"].systems[f"UK_{year}"].run(data, data_filename)

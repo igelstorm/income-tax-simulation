@@ -5,8 +5,8 @@ import pandas as pd
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
-data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data/UK_2015_a4"
-data_filename="UK_2015_a4"
+data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data"
+data_filename="UK_2022_a1"
 
 uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2024.16"
 data_path=f"{data_directory}/{data_filename}.txt"
@@ -17,7 +17,7 @@ data=pd.read_csv(data_path, sep="\t")
 uk_model=Model(uk_model_path)
 
 gbp_per_dkk = 0.113
-dk_x = 3.111 # Factor to increase UC by
+dk_x = 3.274 # Factor to increase UC by
 
 scenarios = [
     "baseline",
@@ -85,23 +85,23 @@ policy_constants={
     },
     "mis": {
         ("$ITPerAll",""):   "29500#y",
-        ("$ITRate2",""):    "0.81",
-        ("$ITRate3",""):    "0.81",
-        ("$ITRate4S",""):   "0.81",
-        ("$ITRate5S",""):   "0.81",
-        ("$ITRate6S",""):   "0.81"
+        ("$ITRate2",""):    "0.783",
+        ("$ITRate3",""):    "0.783",
+        ("$ITRate4S",""):   "0.783",
+        ("$ITRate5S",""):   "0.783",
+        ("$ITRate6S",""):   "0.783"
     },
     "flat": {
         ("$ITPerAll",""):    "0#y",
-        ("$ITRate1",""):     "0.187",
-        ("$ITRate2",""):     "0.187",
-        ("$ITRate3",""):     "0.187",
-        ("$ITRate1S",""):    "0.187",
-        ("$ITRate2S",""):    "0.187",
-        ("$ITRate3S",""):    "0.187",
-        ("$ITRate4S",""):    "0.187",
-        ("$ITRate5S",""):    "0.187",
-        ("$ITRate6S",""):    "0.187"
+        ("$ITRate1",""):     "0.194",
+        ("$ITRate2",""):     "0.194",
+        ("$ITRate3",""):     "0.194",
+        ("$ITRate1S",""):    "0.194",
+        ("$ITRate2S",""):    "0.194",
+        ("$ITRate3S",""):    "0.194",
+        ("$ITRate4S",""):    "0.194",
+        ("$ITRate5S",""):    "0.194",
+        ("$ITRate6S",""):    "0.194"
     },
 }
 
