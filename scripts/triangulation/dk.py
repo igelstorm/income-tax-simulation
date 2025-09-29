@@ -1,36 +1,39 @@
 from euromod import Model
 from datetime import datetime
 import os
+import matplotlib.pyplot as plt
 import pandas as pd
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
-data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data/UK_2015_a4"
+data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data
 data_filename="UK_2015_a4"
 
 uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2024.16"
 data_path=f"{data_directory}/{data_filename}.txt"
 
-output_root_path=f"{script_path}/../intermediate/euromod"
+output_path=f"{script_path}/../../output/triangulation"
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
 
 data=pd.read_csv(data_path, sep="\t")
 uk_model=Model(uk_model_path)
 
+year = 2026
 gbp_per_dkk = 0.113
-dk_x = 3.111 # Factor to increase UC by
+x_values = [3.1109, 3.111, 3.1111]
 
-scenarios = [
-    "baseline",
-    "dk",
-    "mis",
-    "flat",
-]
-years = range(2024, 2030)
-intervention_year = 2026
+# Calculate baseline (bl) revenue and expenditure
+output = uk_model.countries["UK"].systems[f"UK_{year}"].run(data, data_filename)
+df = output.outputs[0]
+bl_revenue = (df["dwt"] * (df["ils_tax"] + df["ils_sicee"] + df["ils_sicse"] + df["ils_sicot"] + df["ils_sicer"])).sum()
+bl_expenditure = (df["dwt"] * df["ils_ben"]).sum()
+bl_balance = bl_revenue - bl_expenditure
 
-policy_constants={
-    "baseline": {},
-    "dk": {
+results = []
+
+for dk_x in x_values:
+    policy_constants = {
         # https://boundlesshq.com/guides/denmark/taxes/
         # DKK 0 - 46,700        8%
         # DKK 46,701 - 544,800  40%
@@ -82,53 +85,34 @@ policy_constants={
         ("$BcapUCnokid", ""):        f"{dk_x*14755:.2f}#y",  # Benefit cap: single claimants without children
         ("$BcapUCLon", ""):          f"{dk_x*25325:.2f}#y",  # Benefit cap: in London: couple and lone parents
         ("$BcapUCLonsing", ""):      f"{dk_x*16965:.2f}#y"   # Benefit cap: in London: single
-    },
-    "mis": {
-        ("$ITPerAll",""):   "29500#y",
-        ("$ITRate2",""):    "0.81",
-        ("$ITRate3",""):    "0.81",
-        ("$ITRate4S",""):   "0.81",
-        ("$ITRate5S",""):   "0.81",
-        ("$ITRate6S",""):   "0.81"
-    },
-    "flat": {
-        ("$ITPerAll",""):    "0#y",
-        ("$ITRate1",""):     "0.187",
-        ("$ITRate2",""):     "0.187",
-        ("$ITRate3",""):     "0.187",
-        ("$ITRate1S",""):    "0.187",
-        ("$ITRate2S",""):    "0.187",
-        ("$ITRate3S",""):    "0.187",
-        ("$ITRate4S",""):    "0.187",
-        ("$ITRate5S",""):    "0.187",
-        ("$ITRate6S",""):    "0.187"
-    },
-}
+    }
 
-for scenario in scenarios:
-    output_path=f"{output_root_path}/{scenario}"
-    if os.path.exists(output_path):
-        print(f"Already exists, skipping: {output_path}")
-        continue
-    else:
-        os.makedirs(output_path)
-
-    # Policy for base price year required for SimPaths to run:
-    uk_model.countries["UK15"].systems[f"UK_2015"].run(
+    output = uk_model.countries["UK"].systems[f"UK_{year}"].run(
         data,
         data_filename,
-        outputpath=output_path
+        constantsToOverwrite=policy_constants
     )
+    df = output.outputs[0]
+    revenue = (df["dwt"] * (df["ils_tax"] + df["ils_sicee"] + df["ils_sicse"] + df["ils_sicot"] + df["ils_sicer"])).sum()
+    expenditure = (df["dwt"] * df["ils_ben"]).sum()
+    balance = revenue - expenditure
+    results.append({
+        "x_value": dk_x,
+        "revenue": revenue,
+        "expenditure": expenditure,
+        "balance": balance,
+        "revenue_vs_bl": revenue - bl_revenue,
+        "expenditure_vs_bl": expenditure - bl_expenditure,
+        "balance_vs_bl": balance - bl_balance,
+    })
 
-    for year in years:
-        print(f"{datetime.now()}: Running scenario '{scenario}', year {year}, output path: {output_path}")
-        if year >= intervention_year:
-            constants = policy_constants[scenario]
-        else:
-            constants = policy_constants["baseline"]
-        uk_model.countries["UK"].systems[f"UK_{year}"].run(
-            data,
-            data_filename,
-            constantsToOverwrite=constants,
-            outputpath=output_path
-       )
+df = pd.DataFrame(results)
+
+plt.figure(figsize=(8, 5))
+plt.plot(df['x_value'], df['balance_vs_bl'], marker='o', linestyle='-')
+plt.axhline(y=0, color='black', linestyle='--')
+plt.xlabel('x_value')
+plt.ylabel('Balance compared to baseline')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig(f"{output_path}/dk.png")
