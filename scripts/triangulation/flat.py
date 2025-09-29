@@ -9,7 +9,7 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data"
 data_filename="UK_2022_a1"
 
-uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2024.16"
+uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2025.07-2022"
 data_path=f"{data_directory}/{data_filename}.txt"
 
 output_path=f"{script_path}/../../output/triangulation"
