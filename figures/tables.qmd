@@ -17,3 +17,11 @@ execute:
 ```{r}
 #| file: tbl-decile-share.R
 ```
+
+```{r}
+#| file: tbl-simpaths-overall-2026.R
+```
+
+```{r}
+#| file: tbl-simpaths-deciles-2026.R
+```

@@ -52,9 +52,9 @@ data <- raw_data[, .(
   sii = median(sii, na.rm = TRUE),
   sii_l = quantile(sii, 0.025, na.rm = TRUE),
   sii_u = quantile(sii, 0.975, na.rm = TRUE),
-  rii = median(rii, na.rm = TRUE),
-  rii_l = quantile(rii, 0.025, na.rm = TRUE),
-  rii_u = quantile(rii, 0.975, na.rm = TRUE)
+  rii = median(log_rii, na.rm = TRUE),
+  rii_l = quantile(log_rii, 0.025, na.rm = TRUE),
+  rii_u = quantile(log_rii, 0.975, na.rm = TRUE)
 ), by = c("strata", subgroups, "scenario", "time")]
 ```
 
