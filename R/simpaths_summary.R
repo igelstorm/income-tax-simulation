@@ -44,6 +44,12 @@ create_simpaths_summary <- function(person_data, bu_data) {
     labels = FALSE,
     include.lowest = TRUE
   ), by = c("run", "time") ]
+  merged_data[, inc_quintile := cut(
+    equivalisedDisposableIncomeYearly,
+    quantile(equivalisedDisposableIncomeYearly, probs = 0:5/5),
+    labels = FALSE,
+    include.lowest = TRUE
+  ), by = c("run", "time") ]
 
   # Calculate employment variable for purposes of employment rate
   merged_data[, employed := NA]
@@ -105,6 +111,7 @@ create_simpaths_summary <- function(person_data, bu_data) {
   rbind(
     pop_stats,
     subgroup_stats(final_data, "inc_decile"),
+    subgroup_stats(final_data, "inc_quintile"),
     subgroup_stats(final_data, "dgn"),
     subgroup_stats(final_data, "deh_c3"),
     subgroup_stats(final_data, "age_cat"),

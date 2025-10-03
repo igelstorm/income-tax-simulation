@@ -2,7 +2,7 @@ calculate_difference <- function(baseline_data, intervention_data) {
   bln <- baseline_data
   int <- intervention_data
 
-  id_cols = c("time", "strata", "inc_decile", "dgn", "deh_c3", "age_cat")
+  id_cols = c("time", "strata", "inc_decile", "inc_quintile", "dgn", "deh_c3", "age_cat")
   val_cols <- setdiff(names(bln), id_cols)
 
   diffs <- bln[, .SD, .SDcols = id_cols]
@@ -30,7 +30,7 @@ calculate_difference <- function(baseline_data, intervention_data) {
 }
 
 calculate_cis <- function(data) {
-  id_cols = c("time", "strata", "inc_decile", "dgn", "deh_c3", "age_cat")
+  id_cols = c("time", "strata", "inc_decile", "inc_quintile", "dgn", "deh_c3", "age_cat")
   val_cols <- setdiff(names(data), id_cols)
 
   runs <- length(unique(data$run))
