@@ -13,7 +13,8 @@
 #SBATCH --ntasks-per-node=1
 
 SIMPATHS_DIR=~/src/SimPaths
+MVN_BINARY=~/apache-maven-3.9.14/bin/mvn
 
 module load apps/java/23.0.1/noarch
 
-mvn clean package
+$MVN_BINARY clean package

@@ -37,3 +37,9 @@ How to run:
 ## Stage 2: Run SimPaths
 
 ## Stage 3: Analyse outputs
+
+## MARS-specific instructions
+
+Download and install Apache Maven:
+
+    wget https://dlcdn.apache.org/maven/maven-3/3.9.14/binaries/apache-maven-3.9.14-bin.tar.gz
