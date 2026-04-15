@@ -17,4 +17,5 @@ MVN_BINARY=~/apache-maven-3.9.14/bin/mvn
 
 module load apps/java/23.0.1/noarch
 
+cd $SIMPATHS_DIR
 $MVN_BINARY clean package
