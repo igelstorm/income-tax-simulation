@@ -13,6 +13,7 @@ runs        <- 1000
 
 simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 results_root_path <- here::here("intermediate", "simpaths")
+euromod_output_directory <- here::here("data", "euromod_output")
 
 euromod_file_path <- file.path(simpaths_path, "input", "EUROMODoutput")
 
@@ -29,7 +30,7 @@ for (scenario in scenarios) {
     list.files(pattern = "\\.txt$", full.names = TRUE) |>
     file.remove()
 
-  euromod_files <- here::here("intermediate", "euromod", scenario) |>
+  euromod_files <- here::here(euromod_output_directory, scenario) |>
     list.files(full.names = TRUE)
   file.copy(euromod_files, euromod_file_path)
   euromod_file_path |>
