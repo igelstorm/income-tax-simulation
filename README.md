@@ -38,6 +38,6 @@ How to run:
 
 Install R dependencies:
 
-    `Rscript -e "renv::restore()"`
+    Rscript -e "renv::restore()"
 
 ## Stage 3: Analyse outputs
