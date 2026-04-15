@@ -1,20 +1,22 @@
 from euromod import Model
 from datetime import datetime
+from pathlib import Path
 import os
 import pandas as pd
 
-script_path = os.path.dirname(os.path.realpath(__file__))
+SCRIPT_PATH = Path(__file__).resolve().parent
+ROOT_PATH = SCRIPT_PATH.parent
 
-data_directory="C:/Users/eii2t/OneDrive - University of Glasgow/Data/UKMOD/UKMOD A2.50+ Data"
-data_filename="UK_2022_a1"
+data_directory = ROOT_PATH / "data" / "euromod_input"
+data_filename = "UK_2020_b1"
 
-uk_model_path="C:/Users/eii2t/EUROMOD/UKMOD-PUBLIC-B2025.07-2022"
-data_path=f"{data_directory}/{data_filename}.txt"
+uk_model_path = ROOT_PATH / "data" / "euromod_input" / "UKMOD-PUBLIC-B2025.08"
+data_path = data_directory / f"{data_filename}.txt"
 
-output_root_path=f"{script_path}/../intermediate/euromod"
+output_root_path = ROOT_PATH / "data" / "euromod_output"
 
-data=pd.read_csv(data_path, sep="\t")
-uk_model=Model(uk_model_path)
+data = pd.read_csv(data_path, sep="\t")
+uk_model = Model(str(uk_model_path))
 
 gbp_per_dkk = 0.113
 dk_x = 3.274 # Factor to increase UC by
