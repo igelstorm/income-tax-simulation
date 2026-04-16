@@ -10,10 +10,11 @@ first_year  <- 2024
 last_year   <- 2035
 population  <- 25000
 runs        <- 1000
+random_seed <- 100
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 1) {
-  stop("Usage: Rscript run_scenario.R <scenario>")
+  stop("Usage: Rscript 02_run_simpaths.R <scenario>")
 }
 scenario <- args[[1]]
 
@@ -24,11 +25,13 @@ euromod_output_directory <- here::here("data", "euromod_output")
 simpaths_euromod_input_path <- file.path(simpaths_path, "input", "EUROMODoutput")
 
 timestamp(suffix = paste(" - Started scenario", scenario))
+
+print(paste("Deleting existing EUROMOD files in SimPaths input directory", scenario))
 simpaths_euromod_input_path |>
   list.files(pattern = "\\.txt$", full.names = TRUE) |>
   file.remove()
 
-print(paste("Copying EUROMOD files for scenario", scenario))
+print(paste("Copying EUROMOD files for scenario", scenario, "to SimPaths input directory"))
 euromod_files <- here::here(euromod_output_directory, scenario) |>
   list.files(full.names = TRUE)
 file.copy(euromod_files, simpaths_euromod_input_path)
@@ -36,7 +39,6 @@ file.copy(euromod_files, simpaths_euromod_input_path)
 print("Running SimPaths setup")
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
-  "-c", "UK",
   "-s", format(first_year),
   "-p", format(population, scientific = FALSE),
   "-n", format(runs, scientific = FALSE),
@@ -49,7 +51,7 @@ with_dir(simpaths_path, sys::exec_wait("java", c(
 print("Running SimPaths simulation")
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
-  "-r", "100",    # random seed
+  "-r", format(random_seed),
   "-p", format(population, scientific = FALSE),
   "-n", format(runs, scientific = FALSE),
   "-s", format(first_year),
@@ -60,7 +62,7 @@ with_dir(simpaths_path, sys::exec_wait("java", c(
 
 latest_output_dir <- file.path(simpaths_path, "output") |>
   list.files(full.names = TRUE) |>
-  sort() |>
+  grep(pattern = "logs$", x = _, invert = TRUE, value = TRUE) |>
   tail(n = 1)
 
 print(paste("SimPaths output directory:", latest_output_dir))
