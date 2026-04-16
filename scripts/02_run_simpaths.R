@@ -56,8 +56,7 @@ with_dir(simpaths_path, sys::exec_wait("java", c(
   "-n", format(runs, scientific = FALSE),
   "-s", format(first_year),
   "-e", format(last_year),
-  "-g", "false",
-  "-f"
+  "-g", "false"
 )))
 
 latest_output_dir <- file.path(simpaths_path, "output") |>
