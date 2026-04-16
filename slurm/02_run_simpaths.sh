@@ -5,6 +5,7 @@
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 #SBATCH --partition=nodes
+#SBATCH --time=2-00:00:00
 #SBATCH --mem=4G
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
