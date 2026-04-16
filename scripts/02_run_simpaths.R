@@ -11,65 +11,62 @@ last_year   <- 2035
 population  <- 25000
 runs        <- 1000
 
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) != 1) {
+  stop("Usage: Rscript run_scenario.R <scenario>")
+}
+scenario <- args[[1]]
+
 simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
-results_root_path <- here::here("intermediate", "simpaths")
+results_root_path <- here::here("data", "simpaths_output")
 euromod_output_directory <- here::here("data", "euromod_output")
 
-euromod_file_path <- file.path(simpaths_path, "input", "EUROMODoutput")
+simpaths_euromod_input_path <- file.path(simpaths_path, "input", "EUROMODoutput")
 
-scenarios <- c("baseline", "mis", "flat", "dk")
+timestamp(suffix = paste(" - Started scenario", scenario))
+simpaths_euromod_input_path |>
+  list.files(pattern = "\\.txt$", full.names = TRUE) |>
+  file.remove()
 
-for (scenario in scenarios) {
-  timestamp()
-  print(scenario)
-  if (dir.exists(results_path <- file.path(results_root_path, scenario))) {
-    print("Already run")
-    next
-  }
-  euromod_file_path |>
-    list.files(pattern = "\\.txt$", full.names = TRUE) |>
-    file.remove()
+print(paste("Copying EUROMOD files for scenario", scenario))
+euromod_files <- here::here(euromod_output_directory, scenario) |>
+  list.files(full.names = TRUE)
+file.copy(euromod_files, simpaths_euromod_input_path)
 
-  euromod_files <- here::here(euromod_output_directory, scenario) |>
-    list.files(full.names = TRUE)
-  file.copy(euromod_files, euromod_file_path)
-  euromod_file_path |>
-    list.files(pattern = "\\.txt$", full.names = TRUE) |>
-    print()
+print("Running SimPaths setup")
+with_dir(simpaths_path, sys::exec_wait("java", c(
+  "-jar", "multirun.jar",
+  "-c", "UK",
+  "-s", format(first_year),
+  "-p", format(population, scientific = FALSE),
+  "-n", format(runs, scientific = FALSE),
+  "-s", format(first_year),
+  "-e", format(last_year),
+  "-g", "false",
+  "-DBSetup"
+)))
 
-  with_dir(simpaths_path, sys::exec_wait("java", c(
-    "-jar", "singlerun.jar",
-    "-c", "UK",
-    "-s", format(first_year),
-    "-g", "false",
-    "-Setup"
-  )))
+print("Running SimPaths simulation")
+with_dir(simpaths_path, sys::exec_wait("java", c(
+  "-jar", "multirun.jar",
+  "-r", "100",    # random seed
+  "-p", format(population, scientific = FALSE),
+  "-n", format(runs, scientific = FALSE),
+  "-s", format(first_year),
+  "-e", format(last_year),
+  "-g", "false",
+  "-f"
+)))
 
-  with_dir(simpaths_path, sys::exec_wait("java", c(
-    "-jar", "multirun.jar",
-    "-r", "100",    # random seed
-    "-p", format(population, scientific = FALSE),
-    "-n", format(runs, scientific = FALSE),
-    "-s", format(first_year),
-    "-e", format(last_year),
-    "-g", "false",
-    "-f"
-  )))
+latest_output_dir <- file.path(simpaths_path, "output") |>
+  list.files(full.names = TRUE) |>
+  sort() |>
+  tail(n = 1)
 
-  latest_output_dir <- list.files(file.path(simpaths_path, "output")) |>
-    setdiff("logs") |>
-    sort() |>
-    tail(n = 1)
+print(paste("SimPaths output directory:", latest_output_dir))
+results_path <- file.path(results_root_path, scenario)
 
-  print(latest_output_dir)
-  output_path <- file.path(simpaths_path, "output", latest_output_dir, "csv")
-  output_files <- list.files(output_path, full.names = TRUE, recursive = TRUE)
-  dir.create(results_path, recursive = TRUE)
-  file.copy(
-    output_files,
-    results_path
-  )
-  writeLines(latest_output_dir, file.path(results_path, "output_dir.txt"))
+if (!dir.exists(results_path)) dir.create(results_path, recursive = TRUE)
+writeLines(latest_output_dir, file.path(results_path, "output_dir.txt"))
 
-  timestamp()
-}
+timestamp(suffix = paste(" - Finished scenario", scenario))
