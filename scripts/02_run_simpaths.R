@@ -22,21 +22,26 @@ simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 results_root_path <- here::here("data", "simpaths_output")
 euromod_output_directory <- here::here("data", "euromod_output")
 
-simpaths_euromod_input_path <- file.path(simpaths_path, "input", "EUROMODoutput")
+simpaths_input_path <- file.path(simpaths_path, "input")
+simpaths_euromod_path <- file.path(simpaths_input_path, "EUROMODoutput")
 
 timestamp(suffix = paste(" - Started scenario", scenario))
 
 print(paste("Deleting existing EUROMOD files in SimPaths input directory", scenario))
-simpaths_euromod_input_path |>
+simpaths_euromod_path |>
   list.files(pattern = "\\.txt$", full.names = TRUE) |>
   file.remove()
 
 print(paste("Copying EUROMOD files for scenario", scenario, "to SimPaths input directory"))
 euromod_files <- here::here(euromod_output_directory, scenario) |>
   list.files(full.names = TRUE)
-file.copy(euromod_files, simpaths_euromod_input_path)
+file.copy(euromod_files, simpaths_euromod_path)
 
 print("Running SimPaths setup")
+# Delete old database and policy schedule mappings to ensure we're starting with a clean slate
+# (these will be recreated during the setup process)
+file.remove(file.path(simpaths_input_path, "input.mv.db"))
+file.remove(file.path(simpaths_input_path, "EUROMODpolicySchedule.xlsx"))
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
   "-s", format(first_year),
