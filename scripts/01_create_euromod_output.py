@@ -28,7 +28,7 @@ scenarios = [
     "flat",
 ]
 # Year 2015 is required, since 2015 is the "base price year" in SimPaths
-years = [2015] + list(range(2024, 2030))
+years = [2015] + list(range(2023, 2030))
 intervention_year = 2026
 
 policy_constants={
