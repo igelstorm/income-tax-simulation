@@ -27,7 +27,8 @@ scenarios = [
     "mis",
     "flat",
 ]
-years = range(2024, 2030)
+# Year 2015 is required, since 2015 is the "base price year" in SimPaths
+years = [2015] + list(range(2024, 2030))
 intervention_year = 2026
 
 policy_constants={
@@ -108,21 +109,16 @@ policy_constants={
 }
 
 for scenario in scenarios:
-    output_path=f"{output_root_path}/{scenario}"
-    if os.path.exists(output_path):
-        print(f"Already exists, skipping: {output_path}")
-        continue
-    else:
+    output_path = output_root_path / scenario
+    if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    # Policy for base price year required for SimPaths to run:
-    uk_model.countries["UK15"].systems[f"UK_2015"].run(
-        data,
-        data_filename,
-        outputpath=output_path
-    )
-
     for year in years:
+        output_file_path = output_path / f"uk_{year}_std.txt"
+        if os.path.exists(output_file_path):
+            print(f"{datetime.now()}: Skipping scenario '{scenario}', year {year}, output path: {output_file_path} (already exists)")
+            continue
+
         print(f"{datetime.now()}: Running scenario '{scenario}', year {year}, output path: {output_path}")
         if year >= intervention_year:
             constants = policy_constants[scenario]
