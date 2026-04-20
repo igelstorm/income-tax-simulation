@@ -38,10 +38,8 @@ euromod_files <- here::here(euromod_output_directory, scenario) |>
 file.copy(euromod_files, simpaths_euromod_path)
 
 print("Running SimPaths setup")
-# Delete old database and policy schedule mappings to ensure we're starting with a clean slate
-# (these will be recreated during the setup process)
+# Delete old database to ensure we're starting with a clean slate (this will be recreated during the setup process)
 file.remove(file.path(simpaths_input_path, "input.mv.db"))
-file.remove(file.path(simpaths_input_path, "EUROMODpolicySchedule.xlsx"))
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
   "-s", format(first_year),
