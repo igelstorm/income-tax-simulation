@@ -15,4 +15,4 @@
 
 module load apps/R/4.4.1/gcc-8.5.0+openblas-0.3.28
 
-Rscript scripts/03_summarise_outputs.R
+Rscript scripts/03_summarise_outputs.R baseline
