@@ -26,11 +26,11 @@ person_data <- fread(
     "idBu",
     "demAge",
     "demMaleFlag",
-    "eduHighestC3",
+    "eduHighestC4",
     "labC4",
     "healthMentalMcs",
     "healthPhysicalPcs",
-    "healthPsyDstrss",
+    "healthPsyDstrss0to12",
     "healthSelfRated"
   )
 )
@@ -90,7 +90,7 @@ pop_stats <- final_data[, .(
   strata = "population",
   mean_inc = mean(yDispEquivYear),
   emp_rate = mean(employed, na.rm = TRUE),
-  mean_mhcase = mean(healthPsyDstrss >= 4),
+  mean_mhcase = mean(healthPsyDstrss0to12 >= 4),
   poverty_rate = mean(yPvrtyFlag),
   gini = DescTools::Gini(nonneg_equiv_disp_inc),
   median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
@@ -104,7 +104,7 @@ subgroup_stats <- function(data, subgroup_var) {
     strata = subgroup_var,
     mean_inc = mean(yDispEquivYear),
     emp_rate = mean(employed, na.rm = TRUE),
-    mean_mhcase = mean(healthPsyDstrss >= 4),
+    mean_mhcase = mean(healthPsyDstrss0to12 >= 4),
     poverty_rate = mean(yPvrtyFlag)
   ), by = c("run", "time", subgroup_var)]
   setorderv(stats, c("run", "time", subgroup_var))
@@ -116,7 +116,7 @@ output <- rbind(
   subgroup_stats(final_data, "inc_decile"),
   subgroup_stats(final_data, "inc_quintile"),
   subgroup_stats(final_data, "demMaleFlag"),
-  subgroup_stats(final_data, "eduHighestC3"),
+  subgroup_stats(final_data, "eduHighestC4"),
   subgroup_stats(final_data, "age_cat"),
   # subgroup_stats(final_data, "hh_structure"),
   fill = TRUE
