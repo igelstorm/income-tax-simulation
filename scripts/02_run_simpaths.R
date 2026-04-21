@@ -37,6 +37,9 @@ euromod_files <- here::here(euromod_output_directory, scenario) |>
   list.files(full.names = TRUE)
 file.copy(euromod_files, simpaths_euromod_path)
 
+# Store existing output directories before running the simulation, so we can keep track of which ones are new
+output_dirs_before <- list.files(file.path(simpaths_path, "output"), full.names = TRUE)
+
 print("Running SimPaths setup")
 # Delete old database to ensure we're starting with a clean slate (this will be recreated during the setup process)
 file.remove(file.path(simpaths_input_path, "input.mv.db"))
@@ -62,15 +65,14 @@ with_dir(simpaths_path, sys::exec_wait("java", c(
   "-g", "false"
 )))
 
-latest_output_dir <- file.path(simpaths_path, "output") |>
-  list.files(full.names = TRUE) |>
-  grep(pattern = "logs$", x = _, invert = TRUE, value = TRUE) |>
-  tail(n = 1)
+# Identify the new output directories and store their paths for later use
+output_dirs_after <- list.files(file.path(simpaths_path, "output"), full.names = TRUE)
+new_output_dirs <- setdiff(output_dirs_after, output_dirs_before)
+# Don't include "logs" directory (if there is one)
+new_output_dirs <- grep(pattern = "logs$", x = new_output_dirs, invert = TRUE, value = TRUE)
 
-print(paste("SimPaths output directory:", latest_output_dir))
 results_path <- file.path(results_root_path, scenario)
-
 if (!dir.exists(results_path)) dir.create(results_path, recursive = TRUE)
-writeLines(latest_output_dir, file.path(results_path, "output_dir.txt"))
+writeLines(new_output_dirs, file.path(results_path, "output_dir.txt"))
 
 timestamp(suffix = paste(" - Finished scenario", scenario))
