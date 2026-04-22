@@ -6,11 +6,12 @@ library(withr)
 # - here
 # - sys
 
-first_year  <- 2023
-last_year   <- 2035
-population  <- 25000
-runs        <- 1000
-random_seed <- 100
+first_year      <- 2023
+last_year       <- 2035
+population      <- 25000
+starting_seed   <- 100
+runs_per_batch  <- 10
+batches         <- 100
 
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 1) {
@@ -54,16 +55,19 @@ with_dir(simpaths_path, sys::exec_wait("java", c(
   "-DBSetup"
 )))
 
-print("Running SimPaths simulation")
-with_dir(simpaths_path, sys::exec_wait("java", c(
-  "-jar", "multirun.jar",
-  "-r", format(random_seed),
-  "-p", format(population, scientific = FALSE),
-  "-n", format(runs, scientific = FALSE),
-  "-s", format(first_year),
-  "-e", format(last_year),
-  "-g", "false"
-)))
+for (batch in 1:batches) {
+  print(paste("Running SimPaths simulation, batch", batch, "of", batches))
+  batch_seed <- starting_seed + (batch - 1) * runs_per_batch
+  with_dir(simpaths_path, sys::exec_wait("java", c(
+    "-jar", "multirun.jar",
+    "-r", format(batch_seed),
+    "-p", format(population, scientific = FALSE),
+    "-n", format(runs_per_batch, scientific = FALSE),
+    "-s", format(first_year),
+    "-e", format(last_year),
+    "-g", "false"
+  )))
+}
 
 # Identify the new output directories and store their paths for later use
 output_dirs_after <- list.files(file.path(simpaths_path, "output"), full.names = TRUE)
