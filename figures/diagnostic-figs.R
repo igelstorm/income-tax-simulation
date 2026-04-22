@@ -35,11 +35,16 @@ facet_labels <- c(
   dk = "Enhanced\nprogressivity\n+ benefits",
   mis = "Enhanced\nprogressivity",
   flat = "Reduced\nprogressivity",
-  `1` = "Q1 (bottom)",
-  `2` = "Q2",
-  `3` = "Q3",
-  `4` = "Q4",
-  `5` = "Q5 (top)"
+  `1` = "D1 (bottom)",
+  `2` = "D2",
+  `3` = "D3",
+  `4` = "D4",
+  `5` = "D5",
+  `6` = "D6",
+  `7` = "D7",
+  `8` = "D8",
+  `9` = "D9",
+  `10` = "D10 (top)"
 )
 
 estimates_data |>
@@ -59,3 +64,35 @@ estimates_data |>
   labs(x = "Year", y = "Prevalence of common mental disorders (%)") +
   theme_bw() +
   theme(strip.text.y.left = element_text(angle = 0))
+ggsave("output/mhcase_deciles.png", width = 6, height = 4, dpi = 900)
+
+estimates_data$variable |> unique()
+estimates_data |>
+  filter(scenario == "baseline") |>
+  filter(strata == "population") |>
+  filter(variable == "mean_mhcase") |>
+  select(time, value, value_lower, value_upper) |>
+  ggplot() +
+  aes(x = time) +
+  geom_line(aes(y = value)) +
+  geom_ribbon(aes(y = value, ymin = value_lower, ymax = value_upper), alpha = 0.05, fill = "blue") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Year", y = "Prevalence of common mental disorders (%)") +
+  theme_bw() +
+  theme(strip.text.y.left = element_text(angle = 0))
+ggsave("output/mhcase_pop.png", width = 6, height = 4, dpi = 900)
+
+estimates_data |>
+  filter(scenario == "baseline") |>
+  filter(strata == "population") |>
+  filter(variable == "emp_rate") |>
+  select(time, value, value_lower, value_upper) |>
+  ggplot() +
+  aes(x = time) +
+  geom_line(aes(y = value)) +
+  geom_ribbon(aes(y = value, ymin = value_lower, ymax = value_upper), alpha = 0.05, fill = "blue") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Year", y = "Employment rate (%)") +
+  theme_bw() +
+  theme(strip.text.y.left = element_text(angle = 0))
+ggsave("output/emp_rate_pop.png", width = 6, height = 4, dpi = 900)
