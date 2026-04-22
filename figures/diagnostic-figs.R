@@ -1,3 +1,4 @@
+library(data.table)
 library(dplyr)
 library(ggplot2)
 
@@ -66,7 +67,6 @@ estimates_data |>
   theme(strip.text.y.left = element_text(angle = 0))
 ggsave("output/mhcase_deciles.png", width = 6, height = 4, dpi = 900)
 
-estimates_data$variable |> unique()
 estimates_data |>
   filter(scenario == "baseline") |>
   filter(strata == "population") |>
@@ -77,10 +77,25 @@ estimates_data |>
   geom_line(aes(y = value)) +
   geom_ribbon(aes(y = value, ymin = value_lower, ymax = value_upper), alpha = 0.05, fill = "blue") +
   scale_y_continuous(labels = scales::label_percent()) +
-  labs(x = "Year", y = "Prevalence of common mental disorders (%)") +
+  labs(x = "Year", y = "Prevalence of GHQ >= 4 (%)") +
   theme_bw() +
   theme(strip.text.y.left = element_text(angle = 0))
 ggsave("output/mhcase_pop.png", width = 6, height = 4, dpi = 900)
+
+estimates_data |>
+  filter(scenario == "baseline") |>
+  filter(strata == "population") |>
+  filter(variable == "mean_mcscase35") |>
+  select(time, value, value_lower, value_upper) |>
+  ggplot() +
+  aes(x = time) +
+  geom_line(aes(y = value)) +
+  geom_ribbon(aes(y = value, ymin = value_lower, ymax = value_upper), alpha = 0.05, fill = "blue") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(x = "Year", y = "Prevalence of SF-12 MCS < 35 (%)") +
+  theme_bw() +
+  theme(strip.text.y.left = element_text(angle = 0))
+ggsave("output/mcscase35_pop.png", width = 6, height = 4, dpi = 900)
 
 estimates_data |>
   filter(scenario == "baseline") |>

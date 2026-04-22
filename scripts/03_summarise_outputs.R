@@ -100,6 +100,12 @@ pop_stats <- final_data[, .(
   mean_inc = mean(yDispEquivYear),
   emp_rate = mean(employed, na.rm = TRUE),
   mean_mhcase = mean(healthPsyDstrss0to12 >= 4),
+  mean_mcs = mean(healthMentalMcs),
+  mean_mcscase50 = mean(healthMentalMcs < 50),
+  mean_mcscase45 = mean(healthMentalMcs < 45),
+  mean_mcscase40 = mean(healthMentalMcs < 40),
+  mean_mcscase35 = mean(healthMentalMcs < 35),
+  mean_mcscase30 = mean(healthMentalMcs < 30),
   poverty_rate = mean(yPvrtyFlag),
   gini = DescTools::Gini(nonneg_equiv_disp_inc),
   median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
@@ -114,6 +120,12 @@ subgroup_stats <- function(data, subgroup_var) {
     mean_inc = mean(yDispEquivYear),
     emp_rate = mean(employed, na.rm = TRUE),
     mean_mhcase = mean(healthPsyDstrss0to12 >= 4),
+    mean_mcs = mean(healthMentalMcs),
+    mean_mcscase50 = mean(healthMentalMcs < 50),
+    mean_mcscase45 = mean(healthMentalMcs < 45),
+    mean_mcscase40 = mean(healthMentalMcs < 40),
+    mean_mcscase35 = mean(healthMentalMcs < 35),
+    mean_mcscase30 = mean(healthMentalMcs < 30),
     poverty_rate = mean(yPvrtyFlag)
   ), by = c("seed", "time", subgroup_var)]
   setorderv(stats, c("seed", "time", subgroup_var))
@@ -130,7 +142,6 @@ output <- rbind(
   # subgroup_stats(final_data, "hh_structure"),
   fill = TRUE
 )
-output
 
 print(paste("Saving summarised output for scenario", scenario))
 fwrite(output, output_file)
