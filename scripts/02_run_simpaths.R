@@ -1,5 +1,4 @@
 library(data.table)
-library(foreach)
 library(withr)
 # Also required:
 # - R.utils
@@ -77,6 +76,6 @@ new_output_dirs <- grep(pattern = "logs$", x = new_output_dirs, invert = TRUE, v
 
 results_path <- file.path(results_root_path, scenario)
 if (!dir.exists(results_path)) dir.create(results_path, recursive = TRUE)
-writeLines(new_output_dirs, file.path(results_path, "output_dir.txt"))
+writeLines(new_output_dirs, file.path(results_path, "output_dirs.txt"))
 
 timestamp(suffix = paste(" - Finished scenario", scenario))
