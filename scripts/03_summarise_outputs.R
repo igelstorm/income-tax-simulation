@@ -59,6 +59,7 @@ for (dir in simpaths_output_dirs) {
 }
 
 all_data <- rbindlist(all_data, idcol = "seed")
+saveRDS(all_data, file.path(results_path, "all_data.rds"))
 
 all_data[, inc_decile := cut(
   yDispEquivYear,

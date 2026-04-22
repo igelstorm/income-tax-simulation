@@ -96,3 +96,19 @@ estimates_data |>
   theme_bw() +
   theme(strip.text.y.left = element_text(angle = 0))
 ggsave("output/emp_rate_pop.png", width = 6, height = 4, dpi = 900)
+
+all_data <- readRDS(here::here("data", "simpaths_output", "baseline", "all_data.rds"))
+all_data |>
+  filter(seed == 100) |>
+  mutate(ghq_rounded = round(healthPsyDstrss0to12)) |>
+  group_by(time, ghq_rounded) |>
+  summarise(count = n()) |>
+  group_by(time) |>
+  mutate(prop = count / sum(count)) |>
+  ggplot() +
+  aes(x = time, y = prop, fill = factor(ghq_rounded)) +
+  geom_area() +
+  scale_fill_discrete(palette = scales::pal_viridis()) +
+  labs(x = "Year", y = "Proportion of population", fill = "GHQ-12 score") +
+  theme_bw()
+ggsave("output/ghq_distribution.png", width = 6, height = 4, dpi = 900)
