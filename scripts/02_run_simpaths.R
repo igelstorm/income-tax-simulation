@@ -46,10 +46,6 @@ file.remove(file.path(simpaths_input_path, "input.mv.db"))
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
   "-s", format(first_year),
-  "-p", format(population, scientific = FALSE),
-  "-n", format(runs, scientific = FALSE),
-  "-s", format(first_year),
-  "-e", format(last_year),
   "-g", "false",
   "-DBSetup"
 )))
