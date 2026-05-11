@@ -33,9 +33,19 @@ simpaths_euromod_path |>
   file.remove()
 
 print(paste("Copying EUROMOD files for scenario", scenario, "to SimPaths input directory"))
-euromod_files <- here::here(euromod_output_directory, scenario) |>
+euromod_source_files <- here::here(euromod_output_directory, scenario) |>
   list.files(full.names = TRUE)
-file.copy(euromod_files, simpaths_euromod_path)
+file.copy(euromod_source_files, simpaths_euromod_path)
+
+print(paste("Checking that the new EUROMOD files match the ones for the scenario"))
+euromod_target_files <- list.files(simpaths_euromod_path, pattern = "\\.txt$", full.names = TRUE)
+source_checksum <- tools::md5sum(euromod_source_files)
+target_checksum <- tools::md5sum(euromod_target_files)
+print(paste("Source EUROMOD files with MD5 checksums:"))
+print(source_checksum)
+print(paste("Target EUROMOD files with MD5 checksums:"))
+print(target_checksum)
+stopifnot(source_checksum == target_checksum)
 
 # Store existing output directories before running the simulation, so we can keep track of which ones are new
 output_dirs_before <- list.files(file.path(simpaths_path, "output"), full.names = TRUE)
