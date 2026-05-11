@@ -47,12 +47,27 @@ print(paste("Target EUROMOD files with MD5 checksums:"))
 print(target_checksum)
 stopifnot(source_checksum == target_checksum)
 
+# Delete files that should be recreated during the setup process
+file.remove(file.path(simpaths_input_path, "input.mv.db"))
+
+# Recreate EUROMOD policy schedule
+policy_schedule_path <- file.path(simpaths_input_path, "EUROMODpolicySchedule.xlsx")
+file.remove(policy_schedule_path)
+euromod_filenames <- basename(euromod_target_files)
+euromod_years <- stringr::str_extract(euromod_filenames, "[0-9]+")
+policy_schedule <- data.table(
+  Filename = euromod_filenames,
+  Policy_System_Year = euromod_years,
+  Policy_Start_Year = euromod_years,
+  Description = ""
+)
+openxlsx::write.xlsx(policy_schedule, file = policy_schedule_path, sheetName = "UK")
+
 # Store existing output directories before running the simulation, so we can keep track of which ones are new
 output_dirs_before <- list.files(file.path(simpaths_path, "output"), full.names = TRUE)
 
 print("Running SimPaths setup")
-# Delete old database to ensure we're starting with a clean slate (this will be recreated during the setup process)
-file.remove(file.path(simpaths_input_path, "input.mv.db"))
+
 with_dir(simpaths_path, sys::exec_wait("java", c(
   "-jar", "multirun.jar",
   "-s", format(first_year),
