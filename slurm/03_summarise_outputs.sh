@@ -12,7 +12,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mail-user=erik.igelstrom@glasgow.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --array=0-3%1
+#SBATCH --array=0-3
 
 module load apps/R/4.4.1/gcc-8.5.0+openblas-0.3.28
 
