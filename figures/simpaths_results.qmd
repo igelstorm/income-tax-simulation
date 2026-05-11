@@ -12,28 +12,30 @@ library(ggpubr, quietly = TRUE)
 library(targets, quietly = TRUE)
 
 raw_data <- rbindlist(list(
-  baseline  = tar_read(simpaths_summary_baseline, store = here::here("_targets")),
-  dk        = tar_read(simpaths_summary_dk, store = here::here("_targets")),
-  flat      = tar_read(simpaths_summary_flat, store = here::here("_targets")),
-  mis       = tar_read(simpaths_summary_mis, store = here::here("_targets"))
-), idcol = "scenario")
-raw_data$scenario <- as.character(raw_data$scenario)
+  baseline  = fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv")),
+  dk        = fread(here::here("data", "simpaths_output", "dk", "summarised_output.csv")),
+  flat      = fread(here::here("data", "simpaths_output", "flat", "summarised_output.csv")),
+  mis       = fread(here::here("data", "simpaths_output", "mis", "summarised_output.csv"))
+))
 
-subgroups <- c("inc_decile", "dgn", "deh_c3", "age_cat")
+bld<-fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv"))
 
-comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("run", "time", "strata", subgroups))
-comparison <- merge(
-  raw_data,
-  raw_data[scenario == "baseline"],
-  by = c("time", "strata", subgroups),
-  allow.cartesian = TRUE
-)
+bld[strata == "population" & time == 2030, .(
+  seed,
+  cummean = dplyr::cummean(mean_mcscase35)
+)] |>
+  ggpubr::ggline("seed", "cummean")
+
+
+
+subgroups <- c("inc_decile", "inc_quintile", "demMaleFlag", "eduHighestC4", "age_cat")
+comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("seed", "time", "strata", subgroups))
 
 data <- raw_data[, .(
   runs = .N,
-  mhcase = median(mean_mhcase),
-  mhcase_l = quantile(mean_mhcase, 0.025),
-  mhcase_u = quantile(mean_mhcase, 0.975),
+  mhcase = median(mean_mcscase45),
+  mhcase_l = quantile(mean_mcscase45, 0.025),
+  mhcase_u = quantile(mean_mcscase45, 0.975),
   emp = median(emp_rate),
   emp_l = quantile(emp_rate, 0.025),
   emp_u = quantile(emp_rate, 0.975),
@@ -48,13 +50,13 @@ data <- raw_data[, .(
   median_share_u = quantile(median_share, 0.975, na.rm = TRUE),
   s80s20 = median(s80s20, na.rm = TRUE),
   s80s20_l = quantile(s80s20, 0.025, na.rm = TRUE),
-  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE),
-  sii = median(sii, na.rm = TRUE),
-  sii_l = quantile(sii, 0.025, na.rm = TRUE),
-  sii_u = quantile(sii, 0.975, na.rm = TRUE),
-  rii = median(log_rii, na.rm = TRUE),
-  rii_l = quantile(log_rii, 0.025, na.rm = TRUE),
-  rii_u = quantile(log_rii, 0.975, na.rm = TRUE)
+  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE)
+  # sii = median(sii, na.rm = TRUE),
+  # sii_l = quantile(sii, 0.025, na.rm = TRUE),
+  # sii_u = quantile(sii, 0.975, na.rm = TRUE),
+  # rii = median(log_rii, na.rm = TRUE),
+  # rii_l = quantile(log_rii, 0.025, na.rm = TRUE),
+  # rii_u = quantile(log_rii, 0.975, na.rm = TRUE)
 ), by = c("strata", subgroups, "scenario", "time")]
 ```
 
@@ -70,6 +72,7 @@ common_layers <- list(
   theme_pubr()
 )
 
+data[strata == "population", .(scenario, mhcase)]
 data[strata == "population"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
@@ -106,19 +109,19 @@ data[inc_decile == 1] |>
 ## Inequality in GHQ caseness
 
 ```{r}
-data[strata == "population"] |>
-  ggplot() +
-  aes(x = time, y = sii, ymin = sii_l, ymax = sii_u) +
-  labs(title = "Slope index of inequality", x = "Year", y = "Risk of GHQ caseness") +
-  common_layers
+# data[strata == "population"] |>
+#   ggplot() +
+#   aes(x = time, y = sii, ymin = sii_l, ymax = sii_u) +
+#   labs(title = "Slope index of inequality", x = "Year", y = "Risk of GHQ caseness") +
+#   common_layers
 ```
 
 ```{r}
-data[strata == "population"] |>
-  ggplot() +
-  aes(x = time, y = rii, ymin = rii_l, ymax = rii_u) +
-  labs(title = "Relative index of inequality", x = "Year", y = "RII") +
-  common_layers
+# data[strata == "population"] |>
+#   ggplot() +
+#   aes(x = time, y = rii, ymin = rii_l, ymax = rii_u) +
+#   labs(title = "Relative index of inequality", x = "Year", y = "RII") +
+#   common_layers
 ```
 
 ## Mean income
@@ -170,20 +173,20 @@ data[strata == "population"] |>
 ## Subgroups
 
 ```{r}
-data[strata == "dgn"] |>
+data[strata == "demMaleFlag"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
   labs(title = "Prevalence of GHQ caseness stratified by gender", x = "Year", y = "Prevalence") +
-  facet_wrap("dgn") +
+  facet_wrap("demMaleFlag") +
   common_layers
 ```
 
 ```{r}
-data[strata == "deh_c3"] |>
+data[strata == "eduHighestC4"] |>
   ggplot() +
   aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
   labs(title = "Prevalence of GHQ caseness stratified by education", x = "Year", y = "Prevalence") +
-  facet_wrap("deh_c3") +
+  facet_wrap("eduHighestC4") +
   common_layers
 ```
 
@@ -228,18 +231,18 @@ comparison |>
 ## Change in pairwise scenarios (subgroups)
 
 ```{r}
-comparison[strata == "dgn"] |>
+comparison[strata == "demMaleFlag"] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, dgn, Change = mean_mhcase.y - mean_mhcase.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "dgn")) +
+  _[, .(scenario.x, demMaleFlag, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "demMaleFlag")) +
   geom_vline(xintercept = 0)
 ```
 
 ```{r}
-comparison[strata == "deh_c3"] |>
+comparison[strata == "eduHighestC4"] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, deh_c3, Change = mean_mhcase.y - mean_mhcase.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "deh_c3")) +
+  _[, .(scenario.x, eduHighestC4, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "eduHighestC4")) +
   geom_vline(xintercept = 0)
 ```
 
