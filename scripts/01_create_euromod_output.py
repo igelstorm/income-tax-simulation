@@ -124,7 +124,8 @@ for scenario in scenarios:
             constants = policy_constants[scenario]
         else:
             constants = policy_constants["baseline"]
-        uk_model.countries["UK"].systems[f"UK_{year}"].run(
+        country_name = "UK" if year >= 2016 else "UK15"
+        uk_model.countries[country_name].systems[f"UK_{year}"].run(
             data,
             data_filename,
             constantsToOverwrite=constants,
