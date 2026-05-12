@@ -39,7 +39,28 @@ data <- raw_data[, c(
   .SDcols = summary_vars
 ]
 
-comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("seed", "time", "strata", subgroups))
+comparison <- merge(
+  raw_data[scenario != "baseline"],
+  raw_data[scenario == "baseline"],
+  by = c("seed", "time", "strata", subgroups),
+  suffixes = c(".int", ".bln")
+)
+for (varname in summary_vars) {
+  set(
+    comparison,
+    j = paste0(varname, ".diff"),
+    value = comparison[[paste0(varname, ".int")]] - comparison[[paste0(varname, ".bln")]]
+  )
+}
+effects <- comparison[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario.int", "time"),
+  .SDcols = paste0(summary_vars, ".diff")
+]
 ```
 
 ## GHQ caseness
@@ -189,57 +210,76 @@ data[strata == "inc_decile"] |>
   common_layers
 ```
 
-## Change in pairwise scenarios (population)
+## Change relative to baseline in 2035 (population)
 
 ```{r}
-comparison |>
-  _[scenario.x != "baseline"] |>
+effects |>
   _[strata == "population"] |>
-  _[, .(scenario.x, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = "scenario.x") +
-  geom_vline(xintercept = 0)
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = mean_mcscase45, xmin = mean_mcscase45_l, xmax = mean_mcscase45_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_pubr()
 ```
 
 ```{r}
-comparison |>
-  _[scenario.x != "baseline"] |>
+effects |>
   _[strata == "population"] |>
-  _[, .(scenario.x, Change = emp_rate.y - emp_rate.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = "scenario.x") +
-  geom_vline(xintercept = 0)
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = emp_rate, xmin = emp_rate_l, xmax = emp_rate_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_pubr()
 ```
 
-## Change in pairwise scenarios (subgroups)
+## Change relative to baseline in 2035 (subgroups)
 
 ```{r}
-comparison[strata == "demMaleFlag"] |>
-  _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, demMaleFlag, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "demMaleFlag")) +
-  geom_vline(xintercept = 0)
-```
-
-```{r}
-comparison[strata == "eduHighestC4"] |>
-  _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, eduHighestC4, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "eduHighestC4")) +
-  geom_vline(xintercept = 0)
-```
-
-```{r}
-comparison[strata == "age_cat"] |>
-  _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, age_cat, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "age_cat")) +
-  geom_vline(xintercept = 0)
+effects |>
+  _[strata == "demMaleFlag"] |>
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = mean_mcscase45, xmin = mean_mcscase45_l, xmax = mean_mcscase45_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  facet_wrap(~demMaleFlag) +
+  theme_pubr()
 ```
 
 ```{r}
-comparison[strata == "inc_decile"] |>
-  _[inc_decile %in% c(1, 5, 10)] |>
-  _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, inc_decile, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
-  gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "inc_decile")) +
-  geom_vline(xintercept = 0)
+effects |>
+  _[strata == "eduHighestC4"] |>
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = mean_mcscase45, xmin = mean_mcscase45_l, xmax = mean_mcscase45_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  facet_wrap(~eduHighestC4) +
+  theme_pubr()
+```
+
+```{r}
+effects |>
+  _[strata == "age_cat"] |>
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = mean_mcscase45, xmin = mean_mcscase45_l, xmax = mean_mcscase45_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  facet_wrap(~age_cat) +
+  theme_pubr()
+```
+
+```{r}
+effects |>
+  _[strata == "inc_decile"] |>
+  _[time == 2035] |>
+  ggplot() +
+  aes(x = mean_mcscase45, xmin = mean_mcscase45_l, xmax = mean_mcscase45_u, y = scenario.int) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  facet_wrap(~inc_decile) +
+  theme_pubr()
 ```
