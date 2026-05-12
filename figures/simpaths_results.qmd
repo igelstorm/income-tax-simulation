@@ -18,46 +18,28 @@ raw_data <- rbindlist(list(
   mis       = fread(here::here("data", "simpaths_output", "mis", "summarised_output.csv"))
 ))
 
-bld<-fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv"))
-
-bld[strata == "population" & time == 2030, .(
-  seed,
-  cummean = dplyr::cummean(mean_mcscase35)
-)] |>
-  ggpubr::ggline("seed", "cummean")
-
-
-
 subgroups <- c("inc_decile", "inc_quintile", "demMaleFlag", "eduHighestC4", "age_cat")
-comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("seed", "time", "strata", subgroups))
 
-data <- raw_data[, .(
-  runs = .N,
-  mhcase = median(mean_mcscase45),
-  mhcase_l = quantile(mean_mcscase45, 0.025),
-  mhcase_u = quantile(mean_mcscase45, 0.975),
-  emp = median(emp_rate),
-  emp_l = quantile(emp_rate, 0.025),
-  emp_u = quantile(emp_rate, 0.975),
-  mean_inc = median(mean_inc),
-  mean_inc_l = quantile(mean_inc, 0.025),
-  mean_inc_u = quantile(mean_inc, 0.975),
-  gini = median(gini, na.rm = TRUE),
-  gini_l = quantile(gini, 0.025, na.rm = TRUE),
-  gini_u = quantile(gini, 0.975, na.rm = TRUE),
-  median_share = median(median_share, na.rm = TRUE),
-  median_share_l = quantile(median_share, 0.025, na.rm = TRUE),
-  median_share_u = quantile(median_share, 0.975, na.rm = TRUE),
-  s80s20 = median(s80s20, na.rm = TRUE),
-  s80s20_l = quantile(s80s20, 0.025, na.rm = TRUE),
-  s80s20_u = quantile(s80s20, 0.975, na.rm = TRUE)
-  # sii = median(sii, na.rm = TRUE),
-  # sii_l = quantile(sii, 0.025, na.rm = TRUE),
-  # sii_u = quantile(sii, 0.975, na.rm = TRUE),
-  # rii = median(log_rii, na.rm = TRUE),
-  # rii_l = quantile(log_rii, 0.025, na.rm = TRUE),
-  # rii_u = quantile(log_rii, 0.975, na.rm = TRUE)
-), by = c("strata", subgroups, "scenario", "time")]
+summary_vars <- c(
+  "mean_mcscase45",
+  "emp_rate",
+  "mean_inc",
+  "gini",
+  "median_share",
+  "s80s20"
+)
+
+data <- raw_data[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario", "time"),
+  .SDcols = summary_vars
+]
+
+comparison <- merge(raw_data, raw_data[scenario == "baseline"], by = c("seed", "time", "strata", subgroups))
 ```
 
 ## GHQ caseness
@@ -72,10 +54,9 @@ common_layers <- list(
   theme_pubr()
 )
 
-data[strata == "population", .(scenario, mhcase)]
 data[strata == "population"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
   common_layers
 ```
@@ -83,7 +64,7 @@ data[strata == "population"] |>
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness in the bottom income decile", x = "Year", y = "Prevalence") +
   common_layers
 ```
@@ -93,7 +74,7 @@ data[inc_decile == 1] |>
 ```{r}
 data[strata == "population"] |>
   ggplot() +
-  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
+  aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
   labs(title = "Employment rate in the population", x = "Year", y = "Rate") +
   common_layers
 ```
@@ -101,7 +82,7 @@ data[strata == "population"] |>
 ```{r}
 data[inc_decile == 1] |>
   ggplot() +
-  aes(x = time, y = emp, ymin = emp_l, ymax = emp_u) +
+  aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
   labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Rate") +
   common_layers
 ```
@@ -175,7 +156,7 @@ data[strata == "population"] |>
 ```{r}
 data[strata == "demMaleFlag"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness stratified by gender", x = "Year", y = "Prevalence") +
   facet_wrap("demMaleFlag") +
   common_layers
@@ -184,7 +165,7 @@ data[strata == "demMaleFlag"] |>
 ```{r}
 data[strata == "eduHighestC4"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness stratified by education", x = "Year", y = "Prevalence") +
   facet_wrap("eduHighestC4") +
   common_layers
@@ -193,7 +174,7 @@ data[strata == "eduHighestC4"] |>
 ```{r}
 data[strata == "age_cat"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness stratified by age", x = "Year", y = "Prevalence") +
   facet_wrap("age_cat") +
   common_layers
@@ -202,7 +183,7 @@ data[strata == "age_cat"] |>
 ```{r}
 data[strata == "inc_decile"] |>
   ggplot() +
-  aes(x = time, y = mhcase, ymin = mhcase_l, ymax = mhcase_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of GHQ caseness stratified by income decile", x = "Year", y = "Prevalence") +
   facet_wrap("inc_decile") +
   common_layers
@@ -214,7 +195,7 @@ data[strata == "inc_decile"] |>
 comparison |>
   _[scenario.x != "baseline"] |>
   _[strata == "population"] |>
-  _[, .(scenario.x, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  _[, .(scenario.x, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = "scenario.x") +
   geom_vline(xintercept = 0)
 ```
@@ -233,7 +214,7 @@ comparison |>
 ```{r}
 comparison[strata == "demMaleFlag"] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, demMaleFlag, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  _[, .(scenario.x, demMaleFlag, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "demMaleFlag")) +
   geom_vline(xintercept = 0)
 ```
@@ -241,7 +222,7 @@ comparison[strata == "demMaleFlag"] |>
 ```{r}
 comparison[strata == "eduHighestC4"] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, eduHighestC4, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  _[, .(scenario.x, eduHighestC4, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "eduHighestC4")) +
   geom_vline(xintercept = 0)
 ```
@@ -249,7 +230,7 @@ comparison[strata == "eduHighestC4"] |>
 ```{r}
 comparison[strata == "age_cat"] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, age_cat, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  _[, .(scenario.x, age_cat, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "age_cat")) +
   geom_vline(xintercept = 0)
 ```
@@ -258,7 +239,7 @@ comparison[strata == "age_cat"] |>
 comparison[strata == "inc_decile"] |>
   _[inc_decile %in% c(1, 5, 10)] |>
   _[scenario.x != "baseline"] |>
-  _[, .(scenario.x, inc_decile, Change = mean_mhcase.y - mean_mhcase.x)] |>
+  _[, .(scenario.x, inc_decile, Change = mean_mcscase45.y - mean_mcscase45.x)] |>
   gghistogram(x = "Change", bins = 30, facet.by = c("scenario.x", "inc_decile")) +
   geom_vline(xintercept = 0)
 ```
