@@ -6,12 +6,12 @@ library(withr)
 # - sys
 
 scenario        <- Sys.getenv("SCENARIO")
-first_year      <- Sys.getenv("FIRST_YEAR")
-last_year       <- Sys.getenv("LAST_YEAR")
-population      <- Sys.getenv("POPULATION")
-starting_seed   <- Sys.getenv("STARTING_SEED")
-runs_per_batch  <- Sys.getenv("RUNS_PER_BATCH")
-batches         <- Sys.getenv("BATCHES")
+first_year      <- Sys.getenv("FIRST_YEAR") |> as.numeric()
+last_year       <- Sys.getenv("LAST_YEAR") |> as.numeric()
+population      <- Sys.getenv("POPULATION") |> as.numeric()
+starting_seed   <- Sys.getenv("STARTING_SEED") |> as.numeric()
+runs_per_batch  <- Sys.getenv("RUNS_PER_BATCH") |> as.numeric()
+batches         <- Sys.getenv("BATCHES") |> as.numeric()
 simpaths_path   <- Sys.getenv("SIMPATHS_PATH")
 
 results_root_path <- here::here("data", "simpaths_output")
