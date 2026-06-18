@@ -5,20 +5,15 @@ library(withr)
 # - here
 # - sys
 
-first_year      <- 2023
-last_year       <- 2035
-population      <- 25000
-starting_seed   <- 100
-runs_per_batch  <- 10
-batches         <- 100
+scenario        <- Sys.getenv("SCENARIO")
+first_year      <- Sys.getenv("FIRST_YEAR")
+last_year       <- Sys.getenv("LAST_YEAR")
+population      <- Sys.getenv("POPULATION")
+starting_seed   <- Sys.getenv("STARTING_SEED")
+runs_per_batch  <- Sys.getenv("RUNS_PER_BATCH")
+batches         <- Sys.getenv("BATCHES")
+simpaths_path   <- Sys.getenv("SIMPATHS_PATH")
 
-args <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 1) {
-  stop("Usage: Rscript 02_run_simpaths.R <scenario>")
-}
-scenario <- args[[1]]
-
-simpaths_path <- R.utils::getAbsolutePath(here::here("../SimPaths"))
 results_root_path <- here::here("data", "simpaths_output")
 euromod_output_directory <- here::here("data", "euromod_output")
 

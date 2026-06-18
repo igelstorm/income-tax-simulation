@@ -13,12 +13,19 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mail-user=erik.igelstrom@glasgow.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --array=0-3%1
 
 module load apps/R/4.4.1/gcc-8.5.0+openblas-0.3.28
 module load apps/java/23.0.1/noarch
 
 export JAVA_TOOL_OPTIONS="-Xmx6g -XX:+ExitOnOutOfMemoryError"
-ARGS=(baseline dk mis flat)
 
-Rscript scripts/02_run_simpaths.R ${ARGS[$SLURM_ARRAY_TASK_ID]}
+export SCENARIO=baseline
+export FIRST_YEAR=2023
+export LAST_YEAR=2035
+export POPULATION=25000
+export STARTING_SEED=100
+export RUNS_PER_BATCH=10
+export BATCHES=100
+export SIMPATHS_PATH=../SimPaths
+
+Rscript scripts/02_run_simpaths.R

@@ -1,10 +1,6 @@
 library(data.table)
 
-args <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 1) {
-  stop("Usage: Rscript 03_summarise_outputs.R <scenario>")
-}
-scenario <- args[[1]]
+scenario <- Sys.getenv("SCENARIO")
 
 results_path <- here::here("data", "simpaths_output", scenario)
 output_file <- file.path(results_path, "summarised_output.csv")

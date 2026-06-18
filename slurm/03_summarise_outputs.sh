@@ -16,6 +16,6 @@
 
 module load apps/R/4.4.1/gcc-8.5.0+openblas-0.3.28
 
-ARGS=(baseline dk mis flat)
+export SCENARIO=baseline
 
-Rscript scripts/03_summarise_outputs.R ${ARGS[$SLURM_ARRAY_TASK_ID]}
+Rscript scripts/03_summarise_outputs.R
