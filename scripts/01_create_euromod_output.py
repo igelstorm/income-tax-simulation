@@ -1,8 +1,10 @@
-from euromod import Model
-from datetime import datetime
-from pathlib import Path
+import csv
 import os
 import pandas as pd
+
+from datetime import datetime
+from euromod import Model
+from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve().parent
 ROOT_PATH = SCRIPT_PATH.parent
@@ -107,6 +109,15 @@ policy_constants={
         ("$ITRate6S",""):    "0.194"
     },
 }
+
+# Write parameters for all scenarios to a CSV file for reference
+variables = sorted({key[0] for sub_dict in policy_constants.values() for key in sub_dict.keys()})
+with open(output_root_path / 'scenarios.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['variable'] + list(policy_constants.keys()))
+    for var in variables:
+        row = [var] + [policy_constants[cat].get((var, ''), '') for cat in policy_constants]
+        writer.writerow(row)
 
 for scenario in scenarios:
     output_path = output_root_path / scenario
