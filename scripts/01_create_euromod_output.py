@@ -112,11 +112,14 @@ policy_constants={
 
 # Write parameters for all scenarios to a CSV file for reference
 variables = sorted({key[0] for sub_dict in policy_constants.values() for key in sub_dict.keys()})
+default_policies = uk_model.countries["UK"].systems["UK_2026"].policies
 with open(output_root_path / 'scenarios.csv', 'w', newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(['variable'] + list(policy_constants.keys()))
+    writer.writerow(['variable'] + list(policy_constants.keys()) + ['default_value', 'comment'])
     for var in variables:
-        row = [var] + [policy_constants[cat].get((var, ''), '') for cat in policy_constants]
+        default_value = default_policies.find("functions.parameters.name", f"^\\{var}$", True)[0].value
+        comment = default_policies.find("functions.parameters.name", f"^\\{var}$", True)[0].comment
+        row = [var] + [policy_constants[scenario].get((var, ''), '') for scenario in policy_constants] + [default_value, comment]
         writer.writerow(row)
 
 for scenario in scenarios:
