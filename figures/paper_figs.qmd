@@ -8,8 +8,11 @@ execute:
 
 ```{r}
 library(data.table, quietly = TRUE)
+library(dplyr)
+library(tidyr)
 library(forrest, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
+library(gt, quietly = TRUE)
 
 raw_data <- rbindlist(list(
   baseline  = fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv")),
@@ -23,7 +26,10 @@ subgroups <- c("inc_decile", "inc_quintile", "demMaleFlag", "eduHighestC4", "age
 summary_vars <- c(
   "mean_mcscase45",
   "emp_rate",
+  "poverty_rate",
   "mean_inc",
+  "sii",
+  "rii",
   "gini",
   "median_share",
   "s80s20"
@@ -32,40 +38,18 @@ summary_vars <- c(
 data <- raw_data[, c(
     list(runs = .N),
     lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
-    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
-    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, ".l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, ".u"))
   ),
   by = c("strata", subgroups, "scenario", "time"),
   .SDcols = summary_vars
 ]
+
 data[, scenario := factor(
   scenario,
   levels = c("baseline", "mis", "flat", "dk"),
   labels = c("Baseline", "EP", "RP", "EPEB")
 )]
-
-comparison <- merge(
-  raw_data[scenario != "baseline"],
-  raw_data[scenario == "baseline"],
-  by = c("seed", "time", "strata", subgroups),
-  suffixes = c(".int", ".bln")
-)
-for (varname in summary_vars) {
-  set(
-    comparison,
-    j = paste0(varname, ".diff"),
-    value = comparison[[paste0(varname, ".int")]] - comparison[[paste0(varname, ".bln")]]
-  )
-}
-effects <- comparison[, c(
-    list(runs = .N),
-    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
-    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
-    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
-  ),
-  by = c("strata", subgroups, "scenario.int", "time"),
-  .SDcols = paste0(summary_vars, ".diff")
-]
 ```
 
 ## MCS caseness
@@ -86,7 +70,7 @@ common_layers <- list(
 data[strata == "population"] |>
   _[time >= 2026] |>
   ggplot() +
-  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45.l, ymax = mean_mcscase45.u) +
   labs(title = "Prevalence of MCS caseness in the population", x = "Year", y = "Prevalence") +
   scale_y_continuous(labels = scales::percent) +
   common_layers
@@ -111,8 +95,8 @@ data |>
   ) |>
   forrest(
     estimate = "mean_mcscase45",
-    lower = "mean_mcscase45_l",
-    upper = "mean_mcscase45_u",
+    lower = "mean_mcscase45.l",
+    upper = "mean_mcscase45.u",
     label = "scenario",
     section = "inc_decile",
     shape = "scenario",
@@ -121,4 +105,63 @@ data |>
     dodge = TRUE,
     xlab = "Prevalence (95% UI)"
   )
+```
+
+```{r}
+variables <- c("mean_inc", "emp_rate", "mean_mcscase45", "poverty_rate", "gini", "median_share", "s80s20", "sii", "rii")
+
+tab <- data |>
+  _[strata == "population"] |>
+  _[time == 2035] |>
+  subset(select = c("scenario", variables, paste0(variables, ".l"), paste0(variables, ".u"))) |>
+  _[order(scenario)] |>
+  pivot_longer(
+    -scenario,
+    names_to = c("Variable", "stat"),
+    names_sep = "\\."
+  ) |>
+  mutate(
+    Variable = case_match(
+      Variable,
+      "mean_inc" ~ "Mean income",
+      "emp_rate" ~ "Employment rate",
+      "mean_mcscase45" ~ "Poor mental health prevalence",
+      "poverty_rate" ~ "Poverty rate",
+      "gini" ~ "Gini index",
+      "median_share" ~ "Median share of income",
+      "s80s20" ~ "S80/S20",
+      "sii" ~ "SII for poor mental health by income",
+      "rii" ~ "RII for poor mental health by income"
+    )
+  ) |>
+  replace_na(list(stat = "est")) |>
+  pivot_wider(
+    id_cols = c(scenario, Variable),
+    names_from = stat,
+    values_from = value
+  ) |>
+  mutate(estimate = sprintf("%.2f\n<br/>(%.2f, %.2f)", est, l, u)) |>
+  pivot_wider(
+    Variable,
+    names_from = scenario,
+    values_from = estimate
+  ) |>
+  gt() |>
+  fmt_markdown() |>
+  tab_style(cell_text(whitespace = "pre"), cells_body()) |>
+  tab_footnote(
+    "Enhanced Progressivity.",
+    cells_column_labels("EP")
+  ) |>
+  tab_footnote(
+    "Reduced Progressivity.",
+    cells_column_labels("RP")
+  ) |>
+  tab_footnote(
+    "Enhanced Progressivity with Enhanced Benefits.",
+    cells_column_labels("EPEB")
+  ) |>
+  tab_source_note("S80/S20: income quintile share ratio. RII: Relative index of inequality. SII: Slope index of inequality.")
+gtsave(tab, "scenario_outcomes_table.docx")
+tab
 ```
