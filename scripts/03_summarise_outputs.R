@@ -90,6 +90,19 @@ final_data[demAge >= 45 & demAge <= 64, age_cat := "45_64"]
 # final_data[household_status == "Couple" & n_children > 0, hh_structure := "Couple with kids"]
 # final_data[household_status == "Single" & n_children > 0, hh_structure := "Lone parent"]
 
+# Calculate RII and SII
+final_data[, income_rank := rank(yDispEquivYear) / .N, by = c("run", "time")]
+final_data[, mcs_case := healthMentalMcs < 46]
+inequality <- final_data[, {
+  model <- glm(mcs_case ~ income_rank, family = binomial(link = "log"))
+  pred_low <- predict(model, newdata = data.frame(income_rank = 0), type = "response")
+  pred_high <- predict(model, newdata = data.frame(income_rank = 1), type = "response")
+  list(
+    sii = pred_high - pred_low,
+    rii = pred_high / pred_low
+  )
+}, by = c("seed", "time")]
+
 pop_stats <- final_data[, .(
   scenario = scenario,
   strata = "population",
@@ -99,6 +112,7 @@ pop_stats <- final_data[, .(
   mean_mcs = mean(healthMentalMcs),
   mean_mcscase50 = mean(healthMentalMcs < 50),
   mean_mcscase45 = mean(healthMentalMcs < 45),
+  mean_mcscase46 = mean(healthMentalMcs < 46),
   mean_mcscase40 = mean(healthMentalMcs < 40),
   mean_mcscase35 = mean(healthMentalMcs < 35),
   mean_mcscase30 = mean(healthMentalMcs < 30),
@@ -107,7 +121,8 @@ pop_stats <- final_data[, .(
   median_share = sum(inc_decile %in% 1:5 * nonneg_equiv_disp_inc) / sum(nonneg_equiv_disp_inc),
   s80s20 = sum((inc_decile >= 9) * nonneg_equiv_disp_inc) / sum((inc_decile <= 2) * nonneg_equiv_disp_inc)
 ), by = c("seed", "time")] |>
-  _[order(seed, time)]
+  _[order(seed, time)] |>
+  merge(inequality, by = c("seed", "time"))
 
 subgroup_stats <- function(data, subgroup_var) {
   stats <- data[, .(
@@ -119,6 +134,7 @@ subgroup_stats <- function(data, subgroup_var) {
     mean_mcs = mean(healthMentalMcs),
     mean_mcscase50 = mean(healthMentalMcs < 50),
     mean_mcscase45 = mean(healthMentalMcs < 45),
+    mean_mcscase46 = mean(healthMentalMcs < 46),
     mean_mcscase40 = mean(healthMentalMcs < 40),
     mean_mcscase35 = mean(healthMentalMcs < 35),
     mean_mcscase30 = mean(healthMentalMcs < 30),
