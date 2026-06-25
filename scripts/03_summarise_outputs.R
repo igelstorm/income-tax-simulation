@@ -98,8 +98,8 @@ inequality <- final_data[, {
   pred_low <- predict(model, newdata = data.frame(income_rank = 0), type = "response")
   pred_high <- predict(model, newdata = data.frame(income_rank = 1), type = "response")
   list(
-    sii = pred_high - pred_low,
-    rii = pred_high / pred_low
+    sii = pred_low - pred_high,
+    rii = pred_low / pred_high
   )
 }, by = c("seed", "time")]
 
