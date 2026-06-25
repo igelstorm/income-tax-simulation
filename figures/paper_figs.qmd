@@ -1,0 +1,124 @@
+---
+title: "SimPaths results"
+# format: docx
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+library(data.table, quietly = TRUE)
+library(forrest, quietly = TRUE)
+library(ggpubr, quietly = TRUE)
+
+raw_data <- rbindlist(list(
+  baseline  = fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv")),
+  dk        = fread(here::here("data", "simpaths_output", "dk", "summarised_output.csv")),
+  flat      = fread(here::here("data", "simpaths_output", "flat", "summarised_output.csv")),
+  mis       = fread(here::here("data", "simpaths_output", "mis", "summarised_output.csv"))
+))
+
+subgroups <- c("inc_decile", "inc_quintile", "demMaleFlag", "eduHighestC4", "age_cat")
+
+summary_vars <- c(
+  "mean_mcscase45",
+  "emp_rate",
+  "mean_inc",
+  "gini",
+  "median_share",
+  "s80s20"
+)
+
+data <- raw_data[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario", "time"),
+  .SDcols = summary_vars
+]
+data[, scenario := factor(
+  scenario,
+  levels = c("baseline", "mis", "flat", "dk"),
+  labels = c("Baseline", "EP", "RP", "EPEB")
+)]
+
+comparison <- merge(
+  raw_data[scenario != "baseline"],
+  raw_data[scenario == "baseline"],
+  by = c("seed", "time", "strata", subgroups),
+  suffixes = c(".int", ".bln")
+)
+for (varname in summary_vars) {
+  set(
+    comparison,
+    j = paste0(varname, ".diff"),
+    value = comparison[[paste0(varname, ".int")]] - comparison[[paste0(varname, ".bln")]]
+  )
+}
+effects <- comparison[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario.int", "time"),
+  .SDcols = paste0(summary_vars, ".diff")
+]
+```
+
+## MCS caseness
+
+```{r}
+#| width: 5
+#| height: 3
+common_layers <- list(
+  geom_line(aes(color = scenario, linetype = scenario)),
+  geom_point(aes(color = scenario, shape = scenario)),
+  geom_ribbon(aes(fill = scenario), alpha = 0.05),
+  scale_color_brewer(palette = "Set1"),
+  scale_fill_brewer(palette = "Set1"),
+  scale_x_continuous(breaks = scales::breaks_pretty()),
+  theme_pubr()
+)
+
+data[strata == "population"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
+  labs(title = "Prevalence of MCS caseness in the population", x = "Year", y = "Prevalence") +
+  scale_y_continuous(labels = scales::percent) +
+  common_layers
+```
+
+## Paper
+
+```{r}
+#| fig-width: 8
+#| fig-height: 10
+data |>
+  _[strata == "inc_decile"] |>
+  _[time == 2035] |>
+  _[order(scenario)] |>
+  _[order(inc_decile)] |>
+  mutate(
+    inc_decile = factor(
+      inc_decile,
+      levels = 1:10,
+      labels = paste("Decile", 1:10)
+    )
+  ) |>
+  forrest(
+    estimate = "mean_mcscase45",
+    lower = "mean_mcscase45_l",
+    upper = "mean_mcscase45_u",
+    label = "scenario",
+    section = "inc_decile",
+    shape = "scenario",
+    legend_shape_pos = NULL,
+    ref_line = NULL,
+    dodge = TRUE,
+    xlab = "Prevalence (95% UI)"
+  )
+```

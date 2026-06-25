@@ -9,7 +9,6 @@ execute:
 ```{r}
 library(data.table, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
-library(targets, quietly = TRUE)
 
 raw_data <- rbindlist(list(
   baseline  = fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv")),
@@ -38,6 +37,11 @@ data <- raw_data[, c(
   by = c("strata", subgroups, "scenario", "time"),
   .SDcols = summary_vars
 ]
+data[, scenario := factor(
+  scenario,
+  levels = c("baseline", "mis", "flat", "dk"),
+  labels = c("Baseline", "EP", "RP", "EPEB")
+)]
 
 comparison <- merge(
   raw_data[scenario != "baseline"],
@@ -63,30 +67,36 @@ effects <- comparison[, c(
 ]
 ```
 
-## GHQ caseness
+## MCS caseness
 
 ```{r}
+#| width: 5
+#| height: 3
 common_layers <- list(
-  geom_line(aes(color = scenario)),
-  geom_point(aes(color = scenario)),
+  geom_line(aes(color = scenario, linetype = scenario)),
+  geom_point(aes(color = scenario, shape = scenario)),
   geom_ribbon(aes(fill = scenario), alpha = 0.05),
   scale_color_brewer(palette = "Set1"),
   scale_fill_brewer(palette = "Set1"),
+  scale_x_continuous(breaks = scales::breaks_pretty()),
   theme_pubr()
 )
 
 data[strata == "population"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness in the population", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness in the population", x = "Year", y = "Prevalence") +
+  scale_y_continuous(labels = scales::percent) +
   common_layers
 ```
 
 ```{r}
 data[inc_decile == 1] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness in the bottom income decile", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness in the bottom income decile", x = "Year", y = "Prevalence") +
   common_layers
 ```
 
@@ -94,6 +104,7 @@ data[inc_decile == 1] |>
 
 ```{r}
 data[strata == "population"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
   labs(title = "Employment rate in the population", x = "Year", y = "Rate") +
@@ -102,19 +113,20 @@ data[strata == "population"] |>
 
 ```{r}
 data[inc_decile == 1] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
   labs(title = "Employment rate in the bottom income decile", x = "Year", y = "Rate") +
   common_layers
 ```
 
-## Inequality in GHQ caseness
+## Inequality in MCS caseness
 
 ```{r}
 # data[strata == "population"] |>
 #   ggplot() +
 #   aes(x = time, y = sii, ymin = sii_l, ymax = sii_u) +
-#   labs(title = "Slope index of inequality", x = "Year", y = "Risk of GHQ caseness") +
+#   labs(title = "Slope index of inequality", x = "Year", y = "Risk of MCS caseness") +
 #   common_layers
 ```
 
@@ -130,6 +142,7 @@ data[inc_decile == 1] |>
 
 ```{r}
 data[inc_decile == 1] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_inc, ymin = mean_inc_l, ymax = mean_inc_u) +
   labs(title = "Mean equivalised disposable household income (bottom decile)", x = "Year", y = "GBP per year") +
@@ -138,6 +151,7 @@ data[inc_decile == 1] |>
 
 ```{r}
 data[inc_decile == 10] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_inc, ymin = mean_inc_l, ymax = mean_inc_u) +
   labs(title = "Mean equivalised disposable household income (top decile)", x = "Year", y = "GBP per year") +
@@ -150,6 +164,7 @@ data[inc_decile == 10] |>
 
 ```{r}
 data[strata == "population"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = gini, ymin = gini_l, ymax = gini_u) +
   labs(title = "Gini coefficient", x = "Year", y = "Gini coefficient") +
@@ -158,6 +173,7 @@ data[strata == "population"] |>
 
 ```{r}
 data[strata == "population"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = median_share, ymin = median_share_l, ymax = median_share_u) +
   labs(title = "Median share of income", subtitle = "Proportion of income earned by the bottom 50%", x = "Year", y = "Median share of income") +
@@ -166,6 +182,7 @@ data[strata == "population"] |>
 
 ```{r}
 data[strata == "population"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = s80s20, ymin = s80s20_l, ymax = s80s20_u) +
   labs(title = "S80/S20", subtitle = "Ratio of income share in the top quintile over income share in the bottom quintile", x = "Year", y = "S80/S20") +
@@ -176,36 +193,40 @@ data[strata == "population"] |>
 
 ```{r}
 data[strata == "demMaleFlag"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness stratified by gender", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness stratified by gender", x = "Year", y = "Prevalence") +
   facet_wrap("demMaleFlag") +
   common_layers
 ```
 
 ```{r}
 data[strata == "eduHighestC4"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness stratified by education", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness stratified by education", x = "Year", y = "Prevalence") +
   facet_wrap("eduHighestC4") +
   common_layers
 ```
 
 ```{r}
 data[strata == "age_cat"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness stratified by age", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness stratified by age", x = "Year", y = "Prevalence") +
   facet_wrap("age_cat") +
   common_layers
 ```
 
 ```{r}
 data[strata == "inc_decile"] |>
+  _[time >= 2026] |>
   ggplot() +
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
-  labs(title = "Prevalence of GHQ caseness stratified by income decile", x = "Year", y = "Prevalence") +
+  labs(title = "Prevalence of MCS caseness stratified by income decile", x = "Year", y = "Prevalence") +
   facet_wrap("inc_decile") +
   common_layers
 ```
