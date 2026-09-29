@@ -21,11 +21,10 @@ data = pd.read_csv(data_path, sep="\t")
 uk_model = Model(str(uk_model_path))
 
 gbp_per_dkk = 0.113
-dk_x = 3.274 # Factor to increase UC by
 
 scenarios = [
     "baseline",
-    "dk",
+    "dk_raw",
     "mis",
     "flat",
 ]
@@ -35,7 +34,7 @@ intervention_year = 2026
 
 policy_constants={
     "baseline": {},
-    "dk": {
+    "dk_raw": {
         # https://boundlesshq.com/guides/denmark/taxes/
         # DKK 0 - 46,700        8%
         # DKK 46,701 - 544,800  40%
@@ -56,37 +55,7 @@ policy_constants={
         ("$ITRate3S", ""):           "0.08",                         # 2018/19 to current: Intermediate rate; 2017/18: Additional rate (Scotland)
         ("$ITRate4S", ""):           "0.40",                         # Higher rate (Scotland)
         ("$ITRate5S", ""):           "0.565",                        # Advanced rate (Scotland)
-        ("$ITRate6S", ""):           "0.565",                        # Top rate (Scotland),
-        # Increase UC to compensate
-        ("$UCNddHCCont", ""):        f"{dk_x*91.47:.2f}#m",      # Universal Credit: Non-dependents' housing cost contribution
-        ("$UCIncdisKidsDis1", ""):   f"{dk_x*673:.2f}#m",        # Universal Credit: higher work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
-        ("$UCIncdisKidsDis2", ""):   f"{dk_x*404:.2f}#m",        # Universal Credit: lower work allowance: responsible for one or more children or qualifying young person or one or both have limited capability for work (2016-)
-        ("$UCSing1824", ""):         f"{dk_x*311.68:.2f}#m",     # Universal Credit: standard allowances: Single 18-24; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
-        ("$UCSing25", ""):           f"{dk_x*393.45:.2f}#m",     # Universal Credit: standard allowances: Single 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
-        ("$UCCoup1617", ""):         f"{dk_x*489.23:.2f}#m",     # Universal Credit: standard allowances: Couple both under 25; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
-        ("$UCCoup18", ""):           f"{dk_x*489.23:.2f}#m",     # Universal Credit: standard allowances: Couple both over 18 (18-24); in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
-        ("$UCCoup25", ""):           f"{dk_x*617.6:.2f}#m",      # Universal Credit: standard allowances: Couple one or both 25 or over; in 2020 Covid-19 shocks: benefit amount is re-defined in policy covshocks_uk
-        ("$UCfam", ""):              f"{dk_x*333.33:.2f}#m",     # Universal Credit: Family element (to be paid with the first child - assumed born prior to 6 April 2017)
-        ("$UCchild", ""):            f"{dk_x*287.92:.2f}#m",     # Universal Credit: Child Element (assumed to born after 6 April 2017)
-        ("$UCDisChild", ""):         f"{dk_x*156.11:.2f}#m",     # Universal Credit: additional amount for a disabled child: lower rate
-        ("$UCSevDisChild", ""):      f"{dk_x*487.58:.2f}#m",     # Universal Credit: additional amount for a disabled child: higher rate
-        ("$UCLCW", ""):              f"{dk_x*156.11:.2f}#m",     # Universal Credit: limited capacity for work (ex WRAG)
-        ("$UCLCWRAG", ""):           f"{dk_x*416.19:.2f}#m",     # Universal Credit: limited capability for work and work-related activity (ex SG)
-        ("$UCcarer", ""):            f"{dk_x*198.31:.2f}#m",     # Universal Credit: carer element
-        ("$UCCC1ChMax", ""):         f"{dk_x*1014.63:.2f}#m",    # Universal Credit: childcare costs element: maximum amount for one child
-        ("$UCCC2ChMax", ""):         f"{dk_x*1739.37:.2f}#m",    # Universal Credit: childcare costs element: maximum amount for two or more children
-        # Increase benefit cap
-        ("$BcapHBSing", ""):         f"{dk_x*14755:.2f}#y",  # Benefit cap: for single
-        ("$BcapHBCoup", ""):         f"{dk_x*22020:.2f}#y",  # Benefit cap: for couples
-        ("$BcapHBLP", ""):           f"{dk_x*22020:.2f}#y",  # Benefit cap: for lone parents
-        ("$BcapHBLon", ""):          f"{dk_x*25325:.2f}#y",  # Benefit cap: couples in London
-        ("$BcapHBLonLP", ""):        f"{dk_x*25325:.2f}#y",  # Benefit cap: lone parents in London
-        ("$BcapHBLonSing", ""):      f"{dk_x*16965:.2f}#y",  # Benefit cap: single in London
-        ("$BcapMinEarn", ""):        f"{dk_x*722:.2f}#m",    # Benefit cap: Minimum earning per benefit unit to avoid benefit cap
-        ("$BcapUCwkids", ""):        f"{dk_x*22020:.2f}#y",  # Benefit cap: Joint claimants and single claimants with children
-        ("$BcapUCnokid", ""):        f"{dk_x*14755:.2f}#y",  # Benefit cap: single claimants without children
-        ("$BcapUCLon", ""):          f"{dk_x*25325:.2f}#y",  # Benefit cap: in London: couple and lone parents
-        ("$BcapUCLonsing", ""):      f"{dk_x*16965:.2f}#y"   # Benefit cap: in London: single
+        ("$ITRate6S", ""):           "0.565"                         # Top rate (Scotland)
     },
     "mis": {
         ("$ITPerAll",""):   "29500#y",
