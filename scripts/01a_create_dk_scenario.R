@@ -14,7 +14,7 @@ filenames <- list.files(here::here("data", "euromod_output", "baseline"))
 for (filename in filenames) {
   baseline <- fread(
     here::here("data", "euromod_output", "baseline", filename),
-    select = c("idperson", "bsauc_s")
+    select = c("idhh", "idperson", "bsauc_s")
   )
   dk_raw <- fread(here::here("data", "euromod_output", "dk_raw", filename))
 
@@ -30,7 +30,7 @@ for (filename in filenames) {
   baseline[, uc_elig := bsauc_s > 0]
 
   dk <- dk_raw |>
-    merge(baseline[, .(idperson, uc_elig)], by = "idperson")
+    merge(baseline[, .(idhh, idperson, uc_elig)], by = c("idhh", "idperson"))
 
   # Increase UC for people who received UC in the baseline scenario, set it to zero for everyone else
   dk[, bsauc_s_new := bsauc_s * uc_multiplier * uc_elig]
