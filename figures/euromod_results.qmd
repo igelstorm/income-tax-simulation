@@ -1,0 +1,67 @@
+---
+title: "EUROMOD scenarios"
+# format: docx
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| include: false
+
+library(data.table, quietly = TRUE)
+library(foreach)
+library(ggpubr, quietly = TRUE)
+
+one <- fread(here::here("data", "euromod_output", "baseline", "uk_2023_std.txt"))
+names(one)
+
+columns <- c("idhh", "dag", "ils_dispy")
+scenarios <- c("baseline", "mis", "flat", "dk")
+years <- 2023:2029
+
+data <- foreach(year = years, .combine = rbind) %:%
+  foreach(scenario = scenarios, .combine = rbind) %do% {
+    data <- fread(
+      here::here("data", "euromod_output", scenario, paste0("uk_", year,  "_std.txt")),
+      select = columns
+    )
+    data$year <- year
+    data$scenario <- scenario
+    data
+  }
+
+by_hh <- data[, .(
+  eq = 1 + 0.5 * (sum(dag >= 14) - 1) + 0.3 * (sum(dag <= 13)),
+  ils_dispy = sum(ils_dispy)
+), by = c("scenario", "year", "idhh")]
+
+by_hh[, ils_dispy_eq := ils_dispy / eq]
+by_hh[, scenario := factor(
+  scenario,
+  levels = c("baseline", "mis", "flat", "dk"),
+  labels = c("Baseline", "Progressive tax", "Flat tax", "Increased benefits")
+)]
+by_hh[, inc_decile := dplyr::ntile(ils_dispy_eq, 10), by = c("scenario", "year")]
+
+baseline_deciles <- by_hh[scenario == "Baseline", .(year, idhh, inc_decile_baseline = inc_decile)]
+
+common_layers <- list(
+  geom_line(aes(color = scenario, linetype = scenario)),
+  geom_point(aes(color = scenario, shape = scenario)),
+  scale_color_brewer(palette = "Set1"),
+  scale_x_continuous(breaks = scales::breaks_pretty()),
+  theme_pubr()
+)
+```
+
+```{r}
+by_hh |>
+  merge(baseline_deciles, by = c("idhh", "year")) |>
+  _[, .(ils_dispy = mean(ils_dispy)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  ggplot() +
+  aes(x = year, y = ils_dispy) +
+  labs(title = "Equivalised household disposable income by baseline income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile_baseline", scales = "free") +
+  common_layers
+```
