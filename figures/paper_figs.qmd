@@ -4,6 +4,7 @@ title: "SimPaths results"
 format: html
 execute:
   echo: false
+  warn: false
 ---
 
 ```{r}
@@ -48,7 +49,7 @@ data <- raw_data[, c(
 data[, scenario := factor(
   scenario,
   levels = c("baseline", "mis", "flat", "dk"),
-  labels = c("Baseline", "EP", "RP", "EPEB")
+  labels = c("Baseline", "Progressive tax", "Flat tax", "Raised benefits")
 )]
 ```
 
@@ -149,18 +150,6 @@ tab <- data |>
   gt() |>
   fmt_markdown() |>
   tab_style(cell_text(whitespace = "pre"), cells_body()) |>
-  tab_footnote(
-    "Enhanced Progressivity.",
-    cells_column_labels("EP")
-  ) |>
-  tab_footnote(
-    "Reduced Progressivity.",
-    cells_column_labels("RP")
-  ) |>
-  tab_footnote(
-    "Enhanced Progressivity with Enhanced Benefits.",
-    cells_column_labels("EPEB")
-  ) |>
   tab_source_note("S80/S20: income quintile share ratio. RII: Relative index of inequality. SII: Slope index of inequality.")
 gtsave(tab, "scenario_outcomes_table.docx")
 tab

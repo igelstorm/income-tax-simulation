@@ -7,6 +7,8 @@ execute:
 ---
 
 ```{r}
+#| include: false
+
 library(data.table, quietly = TRUE)
 library(ggpubr, quietly = TRUE)
 
@@ -40,7 +42,7 @@ data <- raw_data[, c(
 data[, scenario := factor(
   scenario,
   levels = c("baseline", "mis", "flat", "dk"),
-  labels = c("Baseline", "EP", "RP", "EPEB")
+  labels = c("Baseline", "Progressive tax", "Flat tax", "Increased benefits")
 )]
 
 comparison <- merge(
@@ -228,6 +230,26 @@ data[strata == "inc_decile"] |>
   aes(x = time, y = mean_mcscase45, ymin = mean_mcscase45_l, ymax = mean_mcscase45_u) +
   labs(title = "Prevalence of MCS caseness stratified by income decile", x = "Year", y = "Prevalence") +
   facet_wrap("inc_decile") +
+  common_layers
+```
+
+```{r}
+data[strata == "inc_decile"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
+  labs(title = "Employment rate stratified by income decile", x = "Year", y = "Employment rate") +
+  facet_wrap("inc_decile") +
+  common_layers
+```
+
+```{r}
+data[strata == "inc_decile"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = mean_inc, ymin = mean_inc_l, ymax = mean_inc_u) +
+  labs(title = "Mean equivalised disposable household income stratified by income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile", scale = "free") +
   common_layers
 ```
 
