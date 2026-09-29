@@ -13,15 +13,13 @@ library(data.table, quietly = TRUE)
 library(foreach)
 library(ggpubr, quietly = TRUE)
 
-one <- fread(here::here("data", "euromod_output", "baseline", "uk_2023_std.txt"))
-names(one)
-
-columns <- c("idhh", "dag", "ils_dispy")
+columns <- c("idhh", "dag", "ils_dispy", "ils_ben", "bsauc_s")
 scenarios <- c("baseline", "mis", "flat", "dk")
 years <- 2023:2029
 
 data <- foreach(year = years, .combine = rbind) %:%
   foreach(scenario = scenarios, .combine = rbind) %do% {
+    cat(".")
     data <- fread(
       here::here("data", "euromod_output", scenario, paste0("uk_", year,  "_std.txt")),
       select = columns
@@ -33,10 +31,13 @@ data <- foreach(year = years, .combine = rbind) %:%
 
 by_hh <- data[, .(
   eq = 1 + 0.5 * (sum(dag >= 14) - 1) + 0.3 * (sum(dag <= 13)),
-  ils_dispy = sum(ils_dispy)
+  ils_dispy = sum(ils_dispy),
+  ils_ben = sum(ils_ben),
+  any_uc = sum(bsauc_s) > 0
 ), by = c("scenario", "year", "idhh")]
 
 by_hh[, ils_dispy_eq := ils_dispy / eq]
+by_hh[, ils_ben_eq := ils_ben / eq]
 by_hh[, scenario := factor(
   scenario,
   levels = c("baseline", "mis", "flat", "dk"),
@@ -58,10 +59,32 @@ common_layers <- list(
 ```{r}
 by_hh |>
   merge(baseline_deciles, by = c("idhh", "year")) |>
-  _[, .(ils_dispy = mean(ils_dispy)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  _[, .(ils_dispy_eq = mean(ils_dispy_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
   ggplot() +
-  aes(x = year, y = ils_dispy) +
+  aes(x = year, y = ils_dispy_eq) +
   labs(title = "Equivalised household disposable income by baseline income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile_baseline", scales = "free") +
+  common_layers
+```
+
+```{r}
+by_hh |>
+  merge(baseline_deciles, by = c("idhh", "year")) |>
+  _[, .(ils_ben_eq = mean(ils_ben_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  ggplot() +
+  aes(x = year, y = ils_ben_eq) +
+  labs(title = "Equivalised benefit income by baseline income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile_baseline", scales = "free") +
+  common_layers
+```
+
+```{r}
+by_hh |>
+  merge(baseline_deciles, by = c("idhh", "year")) |>
+  _[, .(any_uc = mean(any_uc)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  ggplot() +
+  aes(x = year, y = any_uc) +
+  labs(title = "Prevalence of receiving Universal Credit by baseline income decile", x = "Year", y = "Proportion") +
   facet_wrap("inc_decile_baseline", scales = "free") +
   common_layers
 ```
