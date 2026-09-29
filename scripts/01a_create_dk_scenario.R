@@ -21,7 +21,7 @@ for (filename in filenames) {
   year <- as.numeric(stringr::str_extract(filename, "[0-9]+"))
   if (year < intervention_year) {
     print(paste(filename, ": Prior to intervention year - no changes made"))
-    fwrite(dk_raw, here::here("data", "euromod_output", "dk", filename))
+    fwrite(dk_raw, here::here("data", "euromod_output", "dk", filename), sep = "\t", scipen = 10)
     next
   }
   print(paste(filename, ": Processing"))
@@ -60,5 +60,5 @@ for (filename in filenames) {
   dk[, bsauc_s := bsauc_s_new]
   dk[, c("bsauc_s_new", "bsauc_s_diff", "uc_elig") := NULL]
 
-  fwrite(dk, here::here("data", "euromod_output", "dk", filename))
+  fwrite(dk, here::here("data", "euromod_output", "dk", filename), sep = "\t", scipen = 10)
 }
