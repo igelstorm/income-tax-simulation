@@ -248,8 +248,7 @@ data[strata == "inc_decile"] |>
   labs(title = "Prevalence of MCS caseness stratified by income decile", x = "Year", y = "Prevalence") +
   facet_wrap("inc_decile", scales = "free", ncol = 5) +
   scale_x_continuous(breaks = c(2026, 2030, 2034)) +
-  common_layers +
-  theme(panel.spacing = unit(1, "lines"))
+  common_layers
 ```
 
 ```{r}
@@ -262,8 +261,7 @@ data[strata == "inc_decile"] |>
   labs(title = "Employment rate stratified by income decile", x = "Year", y = "Employment rate") +
   facet_wrap("inc_decile", scales = "free", ncol = 5) +
   scale_x_continuous(breaks = c(2026, 2030, 2034)) +
-  common_layers +
-  theme(panel.spacing = unit(1, "lines"))
+  common_layers
 ```
 
 ```{r}
@@ -276,8 +274,7 @@ data[strata == "inc_decile"] |>
   labs(title = "Mean equivalised disposable household income stratified by income decile", x = "Year", y = "GBP per year") +
   facet_wrap("inc_decile", scales = "free", ncol = 5) +
   scale_x_continuous(breaks = c(2026, 2030, 2034)) +
-  common_layers +
-  theme(panel.spacing = unit(1, "lines"))
+  common_layers
 ```
 
 ## Change relative to baseline in 2035 (population)

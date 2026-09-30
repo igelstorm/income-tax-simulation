@@ -1,3 +1,7 @@
 euromod_venv/
 logs/
 .Rproj.user
+
+*_cache/
+*.pdf
+*.docx

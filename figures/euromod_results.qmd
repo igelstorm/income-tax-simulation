@@ -51,40 +51,48 @@ common_layers <- list(
   geom_line(aes(color = scenario, linetype = scenario)),
   geom_point(aes(color = scenario, shape = scenario)),
   scale_color_brewer(palette = "Set1"),
-  scale_x_continuous(breaks = scales::breaks_pretty()),
   theme_pubr()
 )
 ```
 
 ```{r}
+#| fig-width: 10
+#| fig-height: 5
 by_hh |>
   merge(baseline_deciles, by = c("idhh", "year")) |>
   _[, .(ils_dispy_eq = mean(ils_dispy_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
   ggplot() +
   aes(x = year, y = ils_dispy_eq) +
   labs(title = "Equivalised household disposable income by baseline income decile", x = "Year", y = "GBP per year") +
-  facet_wrap("inc_decile_baseline", scales = "free") +
+  facet_wrap("inc_decile_baseline", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2023, 2026, 2029)) +
   common_layers
 ```
 
 ```{r}
+#| fig-width: 10
+#| fig-height: 5
 by_hh |>
   merge(baseline_deciles, by = c("idhh", "year")) |>
   _[, .(ils_ben_eq = mean(ils_ben_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
   ggplot() +
   aes(x = year, y = ils_ben_eq) +
   labs(title = "Equivalised benefit income by baseline income decile", x = "Year", y = "GBP per year") +
-  facet_wrap("inc_decile_baseline", scales = "free") +
+  facet_wrap("inc_decile_baseline", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2023, 2026, 2029)) +
   common_layers
 ```
 
 ```{r}
+#| fig-width: 10
+#| fig-height: 5
 by_hh |>
   merge(baseline_deciles, by = c("idhh", "year")) |>
   _[, .(any_uc = mean(any_uc)), by = c("scenario", "year", "inc_decile_baseline")] |>
   ggplot() +
   aes(x = year, y = any_uc) +
   labs(title = "Prevalence of receiving Universal Credit by baseline income decile", x = "Year", y = "Proportion") +
-  facet_wrap("inc_decile_baseline", scales = "free") +
+  facet_wrap("inc_decile_baseline", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2023, 2026, 2029)) +
   common_layers
 ```
