@@ -1,0 +1,283 @@
+---
+title: "How would progressive income tax regimes affect mental health in the UK? Microsimulation using UKHLS data"
+authors: Erik Igelström, Daniel Kopasker, Matteo Richiardi, S. Vittal Katikireddi
+# format: html
+format: docx
+execute:
+  echo: false
+  cache: true
+---
+
+```{r}
+#| include: false
+
+library(data.table, quietly = TRUE)
+library(ggpubr, quietly = TRUE)
+
+raw_data <- rbindlist(list(
+  baseline  = fread(here::here("data", "simpaths_output", "baseline", "summarised_output.csv")),
+  dk        = fread(here::here("data", "simpaths_output", "dk", "summarised_output.csv")),
+  flat      = fread(here::here("data", "simpaths_output", "flat", "summarised_output.csv")),
+  mis       = fread(here::here("data", "simpaths_output", "mis", "summarised_output.csv"))
+))
+
+subgroups <- c("inc_decile", "inc_quintile", "demMaleFlag", "eduHighestC4", "age_cat")
+
+summary_vars <- c(
+  "mean_mcs",
+  "emp_rate",
+  "mean_inc",
+  "gini",
+  "median_share",
+  "s80s20",
+  "rii",
+  "sii"
+)
+
+simpaths_data <- raw_data[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario", "time"),
+  .SDcols = summary_vars
+]
+simpaths_data[, scenario := factor(
+  scenario,
+  levels = c("baseline", "mis", "flat", "dk"),
+  labels = c("Baseline", "Progressive tax", "Flat tax", "Increased benefits")
+)]
+
+comparison <- merge(
+  raw_data[scenario != "baseline"],
+  raw_data[scenario == "baseline"],
+  by = c("seed", "time", "strata", subgroups),
+  suffixes = c(".int", ".bln")
+)
+for (varname in summary_vars) {
+  set(
+    comparison,
+    j = paste0(varname, ".diff"),
+    value = comparison[[paste0(varname, ".int")]] - comparison[[paste0(varname, ".bln")]]
+  )
+}
+effects <- comparison[, c(
+    list(runs = .N),
+    lapply(.SD, median, na.rm = TRUE) |> setNames(summary_vars),
+    lapply(.SD, quantile, probs = 0.025, na.rm = TRUE) |> setNames(paste0(summary_vars, "_l")),
+    lapply(.SD, quantile, probs = 0.975, na.rm = TRUE) |> setNames(paste0(summary_vars, "_u"))
+  ),
+  by = c("strata", subgroups, "scenario.int", "time"),
+  .SDcols = paste0(summary_vars, ".diff")
+]
+```
+
+```{r}
+#| include: false
+library(data.table, quietly = TRUE)
+library(foreach)
+library(ggpubr, quietly = TRUE)
+
+columns <- c("idhh", "dag", "ils_dispy", "ils_ben", "bsauc_s")
+scenarios <- c("baseline", "mis", "flat", "dk")
+years <- 2023:2029
+
+data <- foreach(year = years, .combine = rbind) %:%
+  foreach(scenario = scenarios, .combine = rbind) %do% {
+    cat(".")
+    data <- fread(
+      here::here("data", "euromod_output", scenario, paste0("uk_", year,  "_std.txt")),
+      select = columns
+    )
+    data$year <- year
+    data$scenario <- scenario
+    data
+  }
+
+by_hh <- data[, .(
+  eq = 1 + 0.5 * (sum(dag >= 14) - 1) + 0.3 * (sum(dag <= 13)),
+  ils_dispy = sum(ils_dispy),
+  ils_ben = sum(ils_ben),
+  any_uc = sum(bsauc_s) > 0
+), by = c("scenario", "year", "idhh")]
+
+by_hh[, ils_dispy_eq := ils_dispy / eq]
+by_hh[, ils_ben_eq := ils_ben / eq]
+by_hh[, scenario := factor(
+  scenario,
+  levels = c("baseline", "mis", "flat", "dk"),
+  labels = c("Baseline", "Progressive tax", "Flat tax", "Increased benefits")
+)]
+by_hh[, inc_decile := dplyr::ntile(ils_dispy_eq, 10), by = c("scenario", "year")]
+
+baseline_deciles <- by_hh[scenario == "Baseline", .(year, idhh, inc_decile_baseline = inc_decile)]
+```
+
+```{r}
+#| include: false
+common_layers <- list(
+  geom_line(aes(color = scenario, linetype = scenario)),
+  geom_point(aes(color = scenario, shape = scenario, fill = scenario)),
+  scale_shape_manual(values = c(20, 21, 22, 24)),
+  scale_linetype_manual(values = c("solid", "dashed", "dashed", "dashed")),
+  scale_color_manual(values = c("black", "red3", "slateblue3", "springgreen4")),
+  scale_fill_manual(values = c("black", "red3", "slateblue3", "springgreen4")),
+  theme_pubr()
+)
+```
+
+Socioeconomic inequalities in mental health are persistent across Europe. It is unclear whether progressive income tax reforms could reduce these inequalities. We compared the impact on mental health inequalities of redistributive taxation reforms alone to taxation reforms combined with benefit enhancement. 
+
+We used the dynamic SimPaths microsimulation model with UK Household Longitudinal Study data to simulate household incomes, employment and mental health for 2026-35, comparing four fiscally neutral policy scenarios implemented using the EUROMOD tax-benefit model:
+
+(1) Current UK policy (baseline).
+(2) Progressive taxation: Personal Allowance raised to Joseph Rowntree Foundation's Minimum Income Standard (MIS) for a single adult of working age (£29,500 in 2024). Higher and Additional rate of income tax increased to 78.3% to achieve fiscal neutrality.
+(3) Flat tax: Personal Allowance set to 0 and a flat rate of 19.4% applied to all income.
+(4) Increased benefits: Tax bands and rates changed to mirror those of Denmark in 2026. Additional revenue used to increase Universal Credit (UC) by a factor of 4.4 for those who received UC under the baseline scenario.
+
+<!-- ::: {.list-table} -->
+<!-- - - Policy -->
+<!--   - 2026 baseline -->
+<!--   - Progressive tax -->
+<!--   - Flat tax -->
+<!--   - Increased benefits -->
+<!-- - - Personal Allowance -->
+<!--   - £12,570.00 -->
+<!--   - £29,500.00 -->
+<!--   - £0.00 -->
+<!--   - £0.00 -->
+<!-- - - Higher rate threshold -->
+<!--   - £37,700.00 -->
+<!--   - *(unchanged)* -->
+<!--   - *(unchanged)* -->
+<!--   - £5,277.10 -->
+<!-- - - Additional rate threshold -->
+<!--   - £125,140.00 -->
+<!--   - *(unchanged)* -->
+<!--   - *(unchanged)* -->
+<!--   - £61,562.40 -->
+<!-- - - Basic rate -->
+<!--   - 20.0% -->
+<!--   - *(unchanged)* -->
+<!--   - 19.4% -->
+<!--   - 8.0% -->
+<!-- - - Higher rate -->
+<!--   - 40.0% -->
+<!--   - 78.3% -->
+<!--   - 19.4% -->
+<!--   - 40.0% -->
+<!-- - - Additional rate -->
+<!--   - 45.0% -->
+<!--   - 78.3% -->
+<!--   - 19.4% -->
+<!--   - 56.5% -->
+<!-- ::: -->
+
+## Financial impact of policy scenarios
+
+Looking at total household disposable income (equivalised), the scenarios redistribute income between the deciles in the way you would expect:
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+by_hh |>
+  merge(baseline_deciles, by = c("idhh", "year")) |>
+  _[, .(ils_dispy_eq = mean(ils_dispy_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  ggplot() +
+  aes(x = year, y = ils_dispy_eq) +
+  labs(title = "Equivalised household disposable income by baseline income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile_baseline", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2023, 2026, 2029)) +
+  common_layers
+```
+
+Looking specifically at mean household benefit income (also equivalised), it is worth noting that the "Increased benefits" scenario (with increased UC amounts) has substantially increased mean benefits in all deciles except the top one. This does not reflect in an expansion of the population that receives UC (since this scenario only increased UC for those who were already recipients in the baseline scenario), but rather an increase in amount among those who receive it. **Note:** Since UC amounts were increased by the same factor across the board, this may have resulted in unrealistically large increases for some people -- for example, even under a more generous policy, the housing costs element might not increase as much as other elements since it is effectively bounded by actual housing costs. This may particularly be affecting the upper deciles.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+by_hh |>
+  merge(baseline_deciles, by = c("idhh", "year")) |>
+  _[, .(ils_ben_eq = mean(ils_ben_eq)), by = c("scenario", "year", "inc_decile_baseline")] |>
+  ggplot() +
+  aes(x = year, y = ils_ben_eq) +
+  labs(title = "Equivalised benefit income by baseline income decile", x = "Year", y = "GBP per year") +
+  facet_wrap("inc_decile_baseline", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2023, 2026, 2029)) +
+  common_layers
+```
+
+## Impact on mental health and inequalities
+
+At a population level, effects on mental health are small for all the scenarios:
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+simpaths_data[strata == "population"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = mean_mcs, ymin = mean_mcs_l, ymax = mean_mcs_u) +
+  labs(title = "Mean SF-12 Mental Component Score in the population", x = "Year", y = "SF-12 MCS") +
+  scale_x_continuous(breaks = scales::breaks_pretty()) +
+  common_layers
+```
+
+Inequalities in mental health by income are barely different in the two scenarios with redistributive taxation only, but are massively reduced in the increased benefits scenario:
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+simpaths_data[strata == "population"] |>
+  ggplot() +
+  aes(x = time, y = sii, ymin = sii_l, ymax = sii_u) +
+  geom_hline(yintercept = 0, linetype = "dotted", color = "grey50") +
+  labs(title = "Slope index of inequality in SF-12 Mental Component Score\nby equivalised household disposable income", x = "Year", y = "SF-12 MCS") +
+  scale_x_continuous(breaks = scales::breaks_pretty()) +
+  common_layers
+```
+
+This dramatic change in inequality is driven both by improved mental health in lower deciles, and worsened mental health in upper deciles:
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+simpaths_data[strata == "inc_decile"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = mean_mcs, ymin = mean_mcs_l, ymax = mean_mcs_u) +
+  labs(title = "Mean SF-12 Mental Component Score by income decile", x = "Year", y = "SF-12 MCS") +
+  facet_wrap("inc_decile", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2026, 2030, 2034)) +
+  common_layers
+```
+
+## Impact on employment
+
+Bearing in mind that employment in SimPaths has a large effect on mental health (larger than income), looking at employment rates by income decile is informative. The worsenings in the upper deciles appear to be driven by a large reduction in employment rate, which is in turn explained by how the behavioural labour supply module responds to changing financial incentives (increased tax burden and hence reduced marginal return on increasing work hours).
+
+Another important consideration is that the deciles in these figures (apart from the first two) are based on income under the intervention scenario, so the composition of each decile is different. Therefore, at least part of the reduction in mental health and employment rate could be explained by people in lower deciles in the baseline scenario moving up to higher deciles. This is a different mechanism altogether. **Note:** It would be informative to compare these figures to equivalent ones where the deciles are based on each individual's counterfactual income in the baseline scenario -- since each scenario was run with the same starting population and the same set of random seeds, this should be possible, since each individual has a counterpart in each scenario (someone who is in some sense "the same person" but under a different counterfactual). This would require slightly more complex analysis, but would help understand how much this mechanism contributes.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+simpaths_data[strata == "inc_decile"] |>
+  _[time >= 2026] |>
+  ggplot() +
+  aes(x = time, y = emp_rate, ymin = emp_rate_l, ymax = emp_rate_u) +
+  labs(title = "Employment rate by income decile", x = "Year", y = "Employment rate") +
+  facet_wrap("inc_decile", scales = "free", ncol = 5) +
+  scale_x_continuous(breaks = c(2026, 2030, 2034)) +
+  common_layers
+```
+
+## Interpretation and issues
+
+The most striking result here is arguably the large worsening in mental health in upper deciles in the "increased benefits" scenario, and consequently the lack of a population-level improvement. This could be seen as a substantive result that tells us something about how redistribution ought to be done, but could also be seen as a modelling artifact. A number of features of the modelling contribute to this result:
+
+1. The increases to Universal Credit are coarse and have large (potentially unrealistic) impacts on higher income deciles.
+2. Changes in financial incentives have a relatively large effect on employment status in SimPaths across the whole income distribution (i.e., it is relatively easy to convince someone to quit their job by changing the tax/benefit system).
+3. In turn, changes in employment status have a large effect on mental health.
+
+In addition, as already mentioned, some of the changes in decile-by-decile characteristics will be due to composition changes, because many people will have moved between deciles compared to the baseline scenario due to the redistribution of income.
